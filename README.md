@@ -44,7 +44,7 @@ python setup.py bdist_wheel
 pip install git+https://github.com/ziemowit-s//neuronpp
 ```
 * Bear in mind that if you install the library through the pip you will have access to all features of NEURON++, however additionally provided cell models from other publications (listed below) will not work correctly, unless you download the 'commons/' folder from the repository and change paths for the relevant objects. 
-* So if you want to work with those predefined models it is recommended to clone the repositoty as a whole.
+* So if you want to work with those predefined models it is recommended to clone the repository as a whole.
 
 ## Predefined Cell models
 This repository contains the basic cell model `Cell` class and the experimental 'HocCell' class which loads HOC based cell model. The repository also contains some predefined cell models from ModelDB (https://senselab.med.yale.edu/modeldb)
@@ -58,7 +58,7 @@ The list of predefined cell models:
   * Graham et al. 2014, https://doi.org/10.1162/NECO_a_00640
   * Hay et al. 2011, https://doi.org/10.1371/journal.pcbi.1002107
   
-MOD files for the all of those models are located in the commons/mods/ folder. Combe 2018 model and Graham 2014 model additionaly have HOC files located in the commons/hocmodels/ folder 
+MOD files for the all of those models are located in the commons/mods/ folder. Combe 2018 model and Graham 2014 model additionally have HOC files located in the commons/hocmodels/ folder 
 
 ## MOD compilation
 Before run you must compile mod files of your model (if it provides specialised mod features)
