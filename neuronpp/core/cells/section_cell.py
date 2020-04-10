@@ -1,6 +1,5 @@
 from os import path
 from neuron import h
-
 from neuronpp.core.cells.core_cell import CoreCell
 from neuronpp.core.hocwrappers.sec import Sec
 
@@ -28,7 +27,7 @@ class SectionCell(CoreCell):
             eg. (lambda expression) returns sections which name contains 'apic' or their distance > 1000 um from the soma:
           ```
            soma = cell.filter_secs("soma")
-           cell.filter_secs(obj_filter=lambda o: 'apic' in o.name or h.distance(soma(0.5), o(0.5)) > 1000)
+           cell.filter_secs(obj_filter=lambda o: 'apic' in o.name or h.distance(soma.hoc(0.5), o.hoc(0.5)) > 1000)
           ```
 
         * Single object field filter based on callable function passed to the obj_filter param.
@@ -60,23 +59,61 @@ class SectionCell(CoreCell):
                     setattr(mech, name, val)
         return self
 
-    def add_sec(self, name: str, diam=None, l=None, nseg=1):
+
+
+    def set_pas(self, section, Rm=None, g_pas=None, E_rest=None):
+
+        if isinstance(section, str):
+            section_list = self.filter_secs(name=section, as_list=True)
+        elif isinstance(section, Sec):
+            section_list = [section]
+        else:
+            section_list = [Sec(section, cell=self, name=section.name)]
+
+        # Set any non-default parameters
+        for n_sec in section_list:
+            if E_rest is not None:
+                n_sec.hoc.e_pas = E_rest
+            if Rm is not None:
+                n_sec.hoc.g_pas = 1/Rm
+            if g_pas is not None:
+                n_sec.hoc.g_pas = g_pas
+
+
+    def add_sec(self, name: str, diam=None, l=None, rm=None, g_pas=None,
+                E_rest=None, ra=None, cm=None, nseg=None, add_pas=False):
         """
         :param name:
         :param diam:
         :param l:
         :param nseg:
+        :param cm:
+        :param rm:
+        :param ra:
         :return:
         """
         hoc_sec = h.Section(name=name, cell=self)
-        hoc_sec.L = l
-        hoc_sec.diam = diam
-        hoc_sec.nseg = nseg
+        if l is not None:
+            hoc_sec.L = l
+        if diam is not None:
+            hoc_sec.diam = diam
+        if nseg is not None:
+            hoc_sec.nseg = nseg
+        if cm is not None:
+            hoc_sec.cm = cm
+        if ra is not None:
+            hoc_sec.Ra = ra
+        if rm is not None:
+            g_pas = 1/rm
+ 
+        if add_pas is True or g_pas is not None or E_rest is not None:
+            hoc_sec.insert('pas')
+            self.set_pas(hoc_sec, E_rest=E_rest, g_pas=g_pas)
 
-        if len(self.filter_secs(name)) > 0:
+        if len(self.filter_secs(name, as_list=True)) > 0:
             raise LookupError("The name '%s' is already taken by another section of the cell: '%s' of type: '%s'."
                               % (name, self.name, self.__class__.__name__))
-        sec = Sec(hoc_sec, parent=self, name=name)
+        sec = Sec(hoc_sec, cell=self, name=name)
         self.secs.append(sec)
         return sec
 
@@ -84,9 +121,13 @@ class SectionCell(CoreCell):
         """
         default: source(0.0) -> target(1.0)
 
-        If you specify 1.0 for source_loc or target_loc it will assume 0.999 loc instead. This is because NEURON do not
-        insert any mechanisms to the 1.0 end (it is dimension-less). NEURON allows to connect section to the 1.0,
-        however this raise problems while copying parameters between sections. So any 1.0 loc will be changed to 0.999
+        source.hoc.connect(target.hoc(source_loc), target_loc)
+        child.connect(parent)
+        If you specify 1.0 for source_loc or target_loc it will assume 0.999
+        loc instead. This is because NEURON do not insert any mechanisms 
+        to the 1.0 end (it is dimension-less). NEURON allows to connect
+        section to the 1.0, however this raise problems while copying
+        parameters between sections. So any 1.0 loc will be changed to 0.999
         instead.
         :param source:
         :param target:
@@ -147,7 +188,7 @@ class SectionCell(CoreCell):
             if len(self.filter_secs(name)) > 0:
                 raise LookupError("The name '%s' is already taken by another section of the cell: '%s' of type: '%s'."
                                   % (name, self.name, self.__class__.__name__))
-            sec = Sec(hoc_sec, parent=self, name=name)
+            sec = Sec(hoc_sec, cell=self, name=name)
             self.secs.append(sec)
 
         del self.all
@@ -223,4 +264,3 @@ class SectionCell(CoreCell):
     def _get_first_segment(sec: Sec):
         for s in sec.hoc:
             return s
-
