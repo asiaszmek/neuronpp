@@ -6,6 +6,9 @@ git:
 addons:
   apt:
     packages:
+    # - python-numpy 
+    # - python-scipy 
+    # - python-matplotlib 
     - python-tk
     - python-sympy
     - python-tables 
@@ -38,7 +41,7 @@ install:
   - cd nrn
   - ./build.sh
   - export NEURON_HOME=~/neuron
-  - ./configure --without-x --with-nrnpython=python3 --prefix=$NEURON_HOME --without-paranrn --without-iv
+  - ./configure --without-x --with-nrnpython=python3 --prefix=$NEURON_HOME --without-paranrn --without-iv ; 
   - make --silent -j4
   - make --silent install -j4
   - cd src/nrnpython
