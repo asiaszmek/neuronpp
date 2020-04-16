@@ -54,7 +54,7 @@ jobs:
         cd ..
         export PATH=$NEURON_HOME/x86_64/bin:$PATH
         export PYTHONPATH=$GITHUB_WORKSPACE:$HOME/neuron/lib/python/:$PYTHONPATH
-        pwd
+        echo $PYTHONPATH
         python -m pytest
 
      
