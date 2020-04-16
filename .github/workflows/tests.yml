@@ -36,6 +36,7 @@ jobs:
       
     - name: Install neuron 
       run: |
+        echo $NEURON_HOME
         cd ..
         git clone --branch 7.7.2 https://github.com/neuronsimulator/nrn
         cd nrn
