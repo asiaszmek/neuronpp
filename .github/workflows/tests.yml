@@ -43,8 +43,6 @@ jobs:
         python setup.py install
         pip3 install pytest
         cd $GITHUB_WORKSPACE
-        pwd
-        ls
         pip3 install -r requirements.txt
         export PATH=$NEURON_HOME/x86_64/bin:$PATH
         export PYTHONPATH=$GITHUB_WORKSPACE:$HOME/neuron/lib/python/:$PYTHONPATH
