@@ -37,6 +37,7 @@ jobs:
         pip3 install pytest
         pip3 install -r requirements.txt
         export PYTHONPATH=$PYTHONPATH:/usr/local/nrn/lib/python/
+        export PATH=$PATH:/usr/local/nrn/x86_64/bin
         python -m pytest
 
      
