@@ -47,13 +47,13 @@ jobs:
         python setup.py install
   
     - name: Install neuronpp dependencies
-      run: pip3 install pynput
+      run: pip3 install pynput pytest
  
     - name: Test
       run:  |
         cd ..
-        # export PATH=$NEURON_HOME/x86_64/bin:$PATH
-        # export PYTHONPATH=$GITHUB_WORKSPACE:$HOME/neuron/lib/python/:$PYTHONPATH
+        export PATH=$NEURON_HOME/x86_64/bin:$PATH
+        export PYTHONPATH=$GITHUB_WORKSPACE:$HOME/neuron/lib/python/:$PYTHONPATH
         echo $PYTHONPATH
         python -m pytest
 
