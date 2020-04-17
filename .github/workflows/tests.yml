@@ -36,6 +36,8 @@ jobs:
         sudo dpkg -i nrn-7.7.x86_64-linux.deb
         pip3 install pytest
         pip3 install -r requirements.txt
+        export PYTHONPATH=$PYTHONPATH:/usr/local/nrn/lib/python
+        export PATH=$PATH:usr/local/nrn/x86_64/bin
         python -m pytest
 
      
