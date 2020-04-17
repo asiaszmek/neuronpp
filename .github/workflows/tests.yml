@@ -41,8 +41,9 @@ jobs:
         make --silent install -j4
         cd src/nrnpython
         python setup.py install
-        pip3 install pynput 
+        pip3 install pytest
         cd ..
+        pip3 install -r requirements.txt
         export PATH=$NEURON_HOME/x86_64/bin:$PATH
         export PYTHONPATH=$GITHUB_WORKSPACE:$HOME/neuron/lib/python/:$PYTHONPATH
         echo $PYTHONPATH
