@@ -42,7 +42,7 @@ jobs:
         cd src/nrnpython
         python setup.py install
         pip3 install pytest
-        cd ..
+        cd $GITHUB_WORKSPACE
         pwd
         ls
         pip3 install -r requirements.txt
