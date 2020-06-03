@@ -15,11 +15,10 @@ from neuron.units import ms, mV
 h.load_file('stdrun.hoc')
 
 
-class Simulation(NeuronRemovable):
-    def __init__(self, init_v: float = None, dt: float = 0.025, warmup: float = 0, warmup_dt=None,
-                 init_sleep: float = 0, shape_plots: Optional[List[h.PlotShape]] = None,
-                 constant_timestep: bool = True, with_neuron_gui: bool = False,
-                 check_pointers: bool = False, warmup_on_create=False):
+class Simulation:
+    def __init__(self, init_v=None, dt=0.025, warmup=1, init_sleep=0,
+                 shape_plots=(),
+                 constant_timestep=True, with_neuron_gui=False):
         """
         Create an Simulation object to control the NEURON's simulation.
 
