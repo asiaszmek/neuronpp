@@ -1,17 +1,15 @@
 import os
 from neuron import h
+
 from neuronpp.cells.cell import Cell
+path = os.path.dirname(os.path.abspath(__file__))
+f_path = os.path.join(path, "..", "commons/mods/combe2018")
+maximum_segment_length = 75
 from neuronpp.cells.morphology_points import axon_points
 from neuronpp.cells.morphology_points import trunk_points
 from neuronpp.cells.morphology_points import points_apic, points_apic_continued
 from neuronpp.cells.morphology_points import points_dend, points_dend_continued
 import neuronpp.cells.combe_parameters as params
-
-
-path = os.path.dirname(os.path.abspath(__file__))
-f_path = os.path.join(path, "..", "commons/mods/combe2018")
-maximum_segment_length = 75
-
 
 class Combe2018Cell(Cell):
     @staticmethod
@@ -44,9 +42,10 @@ class Combe2018Cell(Cell):
                 for points in points_apic[i]:
                     h.pt3dadd(*points, sec=sec.hoc)
             else:
-                for points in points_apic_continued[i - len_1]:
+                for points in points_apic_continued[i-len_1]:
                     h.pt3dadd(*points, sec=sec.hoc)
 
+    
     def make_dend(self):
         len_1 = len(points_dend)
         for i, sec in enumerate(self.dend):
@@ -55,7 +54,7 @@ class Combe2018Cell(Cell):
                 for points in points_dend[i]:
                     h.pt3dadd(*points, sec=sec.hoc)
             else:
-                for points in points_dend_continued[i - len_1]:
+                for points in points_dend_continued[i-len_1]:
                     h.pt3dadd(*points, sec=sec.hoc)
 
     def make_morphology(self):
@@ -71,15 +70,15 @@ class Combe2018Cell(Cell):
         for i in range(51):
             self.dend.append(self.add_sec("dend_%i" % i))
 
-        self.connect_secs( self.axon, self.soma)
+        self.connect_secs(self.soma, self.axon)
         for i in range(19):
             if i == 0:
                 self.connect_secs(self.trunk[i], self.soma)
             else:
-                self.connect_secs(self.trunk[i], self.trunk[i - 1])
+                self.connect_secs(self.trunk[i], self.trunk[i-1])
 
         for i in range(42, 48):
-            self.connect_secs(self.apic[i], self.apic[i - 1])
+            self.connect_secs(self.apic[i], self.apic[i-1])
         self.connect_secs(self.apic[48], self.apic[46])
         for i in range(49, 51):
             self.connect_secs(self.apic[i], self.apic[48])
@@ -93,15 +92,15 @@ class Combe2018Cell(Cell):
         self.connect_secs(self.apic[58], self.apic[56])
         self.connect_secs(self.apic[59], self.apic[55])
         for i in [60, 61]:
-            self.connect_secs(self.apic[i], self.apic[i - 1])
+            self.connect_secs(self.apic[i], self.apic[i-1])
         self.connect_secs(self.apic[62], self.apic[60])
         self.connect_secs(self.apic[63], self.apic[59])
         for i in [64, 65]:
-            self.connect_secs(self.apic[i], self.apic[i - 1])
+            self.connect_secs(self.apic[i], self.apic[i-1])
         self.connect_secs(self.apic[66], self.apic[64])
         self.connect_secs(self.apic[67], self.apic[63])
         for i in [68, 69]:
-            self.connect_secs(self.apic[i], self.apic[i - 1])
+            self.connect_secs(self.apic[i], self.apic[i-1])
         self.connect_secs(self.apic[70], self.apic[68])
         self.connect_secs(self.apic[71], self.apic[67])
         self.connect_secs(self.apic[0], self.trunk[0])
@@ -121,7 +120,7 @@ class Combe2018Cell(Cell):
         for i in [14, 15]:
             self.connect_secs(self.apic[i], self.apic[13])
         for i in [16, 17]:
-            self.connect_secs(self.apic[i], self.trunk[i - 12])
+            self.connect_secs(self.apic[i], self.trunk[i-12])
         for i in [18, 19]:
             self.connect_secs(self.apic[i], self.apic[17])
         self.connect_secs(self.apic[20], self.trunk[6])
@@ -130,7 +129,7 @@ class Combe2018Cell(Cell):
         for i in [23, 24]:
             self.connect_secs(self.apic[i], self.apic[22])
         for i in [25, 26, 27]:
-            self.connect_secs(self.apic[i], self.trunk[i - 18])
+            self.connect_secs(self.apic[i], self.trunk[i-18])
         for i in [28, 29]:
             self.connect_secs(self.apic[i], self.apic[27])
         for i in[30, 31, 32]:
@@ -141,12 +140,12 @@ class Combe2018Cell(Cell):
         self.connect_secs(self.apic[36], self.trunk[15])
         self.connect_secs(self.apic[37], self.trunk[16])
         for i in [38, 39]:
-            self.connect_secs(self.apic[i], self.apic[i - 1])
+            self.connect_secs(self.apic[i], self.apic[i-1])
         self.connect_secs(self.apic[40], self.apic[38])
         self.connect_secs(self.apic[41], self.apic[37])
         self.connect_secs(self.dend[0], self.soma, 0, 0)
         for i in range(1, 4):
-            self.connect_secs(self.dend[i], self.dend[i - 1])
+            self.connect_secs(self.dend[i], self.dend[i-1])
         self.connect_secs(self.dend[4], self.dend[2])
         self.connect_secs(self.dend[5], self.dend[1])
         for i in [6, 7]:
@@ -157,7 +156,7 @@ class Combe2018Cell(Cell):
             self.connect_secs(self.dend[i], self.dend[9])
         self.connect_secs(self.dend[12], self.dend[0])
         for i in range(13, 16):
-            self.connect_secs(self.dend[i], self.dend[i - 1])
+            self.connect_secs(self.dend[i], self.dend[i-1])
         self.connect_secs(self.dend[16], self.dend[14])
         self.connect_secs(self.dend[17], self.dend[13])
         for i in [18, 19]:
@@ -167,24 +166,24 @@ class Combe2018Cell(Cell):
             self.connect_secs(self.dend[i], self.dend[20])
         self.connect_secs(self.dend[23], self.soma, 0, 0)
         for i in range(24, 27):
-            self.connect_secs(self.dend[i], self.dend[i - 1])
+            self.connect_secs(self.dend[i], self.dend[i-1])
         self.connect_secs(self.dend[27], self.dend[25])
         self.connect_secs(self.dend[28], self.dend[24])
         self.connect_secs(self.dend[29], self.dend[23])
         for i in [30, 31]:
-            self.connect_secs(self.dend[i], self.dend[i - 1])
+            self.connect_secs(self.dend[i], self.dend[i-1])
         self.connect_secs(self.dend[32], self.dend[30])
         for i in [33, 34]:
             self.connect_secs(self.dend[i], self.dend[32])
         self.connect_secs(self.dend[35], self.dend[29])
         for i in range(36, 39):
-            self.connect_secs(self.dend[i], self.dend[i - 1])
+            self.connect_secs(self.dend[i], self.dend[i-1])
         self.connect_secs(self.dend[39], self.dend[37])
         self.connect_secs(self.dend[40], self.dend[36])
         self.connect_secs(self.dend[41], self.dend[35])
         self.connect_secs(self.dend[42], self.soma, source_loc=0, target_loc=0)
         for i in [43, 44]:
-            self.connect_secs(self.dend[i], self.dend[i - 1])
+            self.connect_secs(self.dend[i], self.dend[i-1])
         self.connect_secs(self.dend[45], self.dend[43])
         for i in [46, 47]:
             self.connect_secs(self.dend[i], self.dend[45])
@@ -199,52 +198,58 @@ class Combe2018Cell(Cell):
         self.make_dend()
 
     def add_soma_mechanisms(self):
+        """
+        :param sections:
+            List of sections or string defining single section name or sections names separated by space
+            None will take all sections
+
+        """
         sec = self.soma.hoc
         sec.insert("na3")
         sec.gbar_na3 = params.gna
         sec.insert("kdr")
         sec.gkdrbar_kdr = params.gkdr
-
+        
         sec.ena = params.potNa
-
+        
         sec.insert("nap")
         sec.gnabar_nap = params.soma_nap_gnabar
         sec.K_nap = params.soma_K_nap
         sec.vhalf_nap = params.soma_vhalf_nap
-
+        
         sec.insert("pas")
         sec.g_pas = 1/params.Rm_soma
         sec.e_pas = params.e_pas
         sec.Ra = params.Ra_soma
         sec.cm = params.Cm_soma
-
+        
         sec.insert("h")
         sec.gbar_h = params.soma_hbar
         sec.K_h = params.soma_K_h
         sec.vhalf_h = params.soma_vhalf_h
-
+        
         sec.insert("kap")
         sec.gkabar_kap = params.soma_kap
-
+        
         sec.insert("km")
         sec.gbar_km = params.soma_km
         sec.ek = params.potK
-
+        
         sec.insert("cal")
-        sec.gcalbar_cal = params.soma_caL/10
-
+        sec.gcalbar_cal = params.soma_caL
+        
         sec.insert("cat")
         sec.gcatbar_cat = params.soma_caT
-
+        
         sec.insert("car")
         sec.gcabar_car = params.gsomacar
 
-        sec.insert("SK_channel")
-        sec.cac_SK_channel = params.cac_SK_channel
-        sec.gbar_SK_channel = params.gbar_SK_channel
-
-        sec.insert("BK_channel")  # K(Ca) fAHP potassium type current
-        sec.gkbar_BK_channel = params.gkbar_BK_channel
+        sec.insert("kca")
+        sec.cac_kca = params.cac_kca
+        sec.gbar_kca = params.gbar_kca
+        
+        sec.insert("mykca") # K(Ca) fAHP potassium type current
+        sec.gkbar_mykca = params.gkbar_mykca
 
     def add_axon_mechanisms(self):
         sec = self.axon.hoc
@@ -269,10 +274,10 @@ class Combe2018Cell(Cell):
             sec.insert("car")
             sec.gcabar_car = 0.1*params.soma_car
             sec.insert("cat")
-            sec.insert("SK_channel")
-            sec.cac_SK_channel = params.cac_SK_channel
+            sec.insert("kca")
+            sec.cac_kca = params.cac_kca
             sec.insert("calH")
-            sec.insert("BK_channel")
+            sec.insert("mykca")
             sec.insert("h")
             sec.insert("kap")
             sec.insert("kad")
@@ -285,32 +290,27 @@ class Combe2018Cell(Cell):
             sec.vhalf_nap = params.soma_vhalf_nap
 
             sec.insert("kdr")
-            sec.gkdrbar_kdr = params.gkdr
+            gkdrbar_kdr = params.gkdr
             sec.ena = params.potNa
 
             sec.insert("km")
             sec.gbar_km = params.soma_km
+            sec.ek = params.potK
 
             sec.insert("pas")
             sec.g_pas = 1/params.Rm_trunk
             sec.e_pas = params.e_pas
             sec.Ra = params.Ra_trunk
             sec.cm = params.Cm_trunk
-            sec.ek = -77
-            for i, seg in enumerate(sec):
-                if i == sec.nseg - 1:
-                    xdist = h.distance(sec(1.0))
-                else:
-                    xdist = h.distance(seg)
 
+            for i, seg in enumerate(sec):
+                xdist = h.distance(seg, sec=self.soma.hoc)
                 fr = xdist/params.caT_distal_distance
 
                 if xdist > 50:
-                    self._distribute_channel(seg, "calH", "gcalbar",
-                                             2*params.soma_calH)
+                    self._distribute_channel(seg, "calH", "gcalbar", 2*params.soma_calH)
                 else:
-                    self._distribute_channel(seg, "calH", "gcalbar",
-                                             0.1*params.soma_calH)
+                    self._distribute_channel(seg, "calH", "gcalbar", 0.1*params.soma_calH)
 
                 if xdist < 100:
                     self._distribute_channel(seg, "cat", "gcatbar", 0)
@@ -318,22 +318,16 @@ class Combe2018Cell(Cell):
                     val = params.caT_distal_maxfactor*params.soma_caT*fr
                     self._distribute_channel(seg, "cat", "gcatbar", val)
 
-                if xdist < params.SK_channel_distal_distance and xdist > 50:
-                    self._distribute_channel(seg, "SK_channel", "gbar",
-                                             5*params.soma_SK_channel)
-                    self._distribute_channel(seg, "BK_channel", "gkbar",
-                                             2*params.BK_channel_init)
-
+                if xdist < params.kca_distal_distance and xdist > 50:
+                    self._distribute_channel(seg, "kca", "gbar", 5*params.soma_kca)
+                    self._distribute_channel(seg, "mykca", "gkbar", 2*params.mykca_init)
                 else:
-                    self._distribute_channel(seg, "SK_channel", "gbar",
-                                             0.5*params.soma_SK_channel)
-                    self._distribute_channel(seg, "BK_channel", "gkbar",
-                                             0.5*params.BK_channel_init)
-
+                    self._distribute_channel(seg, "kca", "gbar", 0.5*params.soma_kca)
+                    self._distribute_channel(seg, "mykca", "gkbar", 0.5*params.mykca_init)
 
                 if xdist > 500:
                     xdist = 500
-                val = params.soma_hbar*(1 + 3*xdist/100)
+                val = params.soma_hbar*(1+3*xdist/100)
                 self._distribute_channel(seg, "h", "gbar", val)
 
                 if xdist > 100:
@@ -342,16 +336,16 @@ class Combe2018Cell(Cell):
                     else:
                         new_dist = xdist
 
-                    self._distribute_channel(seg, "h", "vhalf",
-                                             -81 - 8*(new_dist - 100)/200)
+                    self._distribute_channel(seg, "h", "vhalf", -81-8*(new_dist-100)/200)
                     self._distribute_channel(seg, "kad", "gkabar",
-                                             params.soma_kad*(1 + xdist/100))
+                                             params.soma_kad*(1+xdist/100))
                     self._distribute_channel(seg, "kap", "gkabar", 0)
                 else:
                     self._distribute_channel(seg, "h", "vhalf", -81)
                     self._distribute_channel(seg, "kad", "gkabar", 0)
                     self._distribute_channel(seg, "kap", "gkabar",
-                                             params.soma_kap*(1 + xdist/100))
+                                             params.soma_kap*(1+xdist/100))
+
 
     def add_apical_mechanisms(self):
         for s in self.apic:
@@ -361,10 +355,10 @@ class Combe2018Cell(Cell):
             sec.gcabar_car = 0.1*params.soma_car
 
             sec.insert("cat")
-            sec.insert("SK_channel")
-            sec.cac_SK_channel = params.cac_SK_channel
+            sec.insert("kca")
+            sec.cac_kca = params.cac_kca
 
-            sec.insert("BK_channel")
+            sec.insert("mykca")
             sec.insert("h")
             sec.insert("kap")
             sec.insert("kad")
@@ -377,74 +371,62 @@ class Combe2018Cell(Cell):
             sec.vhalf_nap = params.soma_vhalf_nap
 
             sec.insert("kdr")
-            sec.gkdrbar_kdr = params.gkdr
-            
+            gkdrbar_kdr = params.gkdr
             sec.ena = params.potNa
 
             sec.insert("km")
             sec.gbar_km = params.soma_km
+            sec.ek = params.potK
 
             sec.insert("pas")
             sec.g_pas = 1/params.Rm_non_trunk
             sec.e_pas = params.e_pas
             sec.Ra = params.Ra_non_trunk
             sec.cm = params.Cm_non_trunk
-            sec.ek = -80
+
             for i, seg in enumerate(sec):
-                if i == sec.nseg - 1:
-                    xdist = h.distance(sec(1.0))
-                else:
-                    xdist = h.distance(seg)
+                xdist = h.distance(seg)
                 fr = xdist/params.caT_distal_distance
                 if xdist > 50:
-                    new_calH = 2*params.soma_calH
+                    self._distribute_channel(seg, "calH", "gcalbar", 2*params.soma_calH)
                 else:
-                    new_calH = 0.1*params.soma_calH
-
+                    self._distribute_channel(seg, "calH", "gcalbar", 0.1*params.soma_calH)
 
                 if xdist < 100:
-                    new_caT = 0
+                    self._distribute_channel(seg, "cat", "gcatbar", 0)
                 else:
-                    new_caT = params.caT_distal_maxfactor*params.soma_caT*fr
+                    val = params.caT_distal_maxfactor*params.soma_caT*fr
+                    self._distribute_channel(seg, "cat", "gcatbar", val)
 
-                if xdist < params.SK_channel_distal_distance and xdist > 50:
-                    new_SK = 5*params.soma_SK_channel
-                    new_BK = 2*params.BK_channel_init
+                if xdist < params.kca_distal_distance and xdist > 50:
+                    self._distribute_channel(seg, "kca", "gbar", 5*params.soma_kca)
+                    self._distribute_channel(seg, "mykca", "gkbar", 2*params.mykca_init)
                 else:
-                    new_SK = 0.5*params.soma_SK_channel
-                    new_BK = 0.5*params.BK_channel_init
+                    self._distribute_channel(seg, "kca", "gbar", 0.5*params.soma_kca)
+                    self._distribute_channel(seg, "mykca", "gkbar", 0.5*params.mykca_init)
+
                 if xdist > 500:
                     xdist = 500
-                new_h = params.soma_hbar*(1 + 3*xdist/100)
-                if xdist < 100:
-                    h_vhalf = -81
-                    new_kad = 0
-                    new_kap = params.soma_kap*(1 + xdist/100)
-                else:
+                val = params.soma_hbar*(1+3*xdist/100)
+                self._distribute_channel(seg, "h", "gbar", val)
+                if xdist > 100:
                     if xdist > 300:
                         new_dist = 300
                     else:
                         new_dist = xdist
-                    h_vhalf = -81 - 8*(new_dist - 100)/200
-                    new_kad = params.soma_kad*(1 + xdist/100)
-                    new_kap = 0
-
-                self._distribute_channel(seg, "calH", "gcalbar",
-                                         new_calH)
-                self._distribute_channel(seg, "cat", "gcatbar", new_caT)
-                self._distribute_channel(seg, "SK_channel", "gbar",
-                                         new_SK)
-                self._distribute_channel(seg, "BK_channel", "gkbar",
-                                         new_BK)
-                self._distribute_channel(seg, "h", "gbar", new_h)
-                self._distribute_channel(seg, "h", "vhalf", h_vhalf)
-                self._distribute_channel(seg, "kad", "gkabar", new_kad)
-                self._distribute_channel(seg, "kap", "gkabar", new_kap)
+                    self._distribute_channel(seg, "h", "vhalf", -81-8*(new_dist-100)/200)
+                    self._distribute_channel(seg, "kad", "gkabar",
+                                             params.soma_kad*(1+xdist/100))
+                    self._distribute_channel(seg, "kap", "gkabar", 0)
+                else:
+                    self._distribute_channel(seg, "h", "vhalf", -81)
+                    self._distribute_channel(seg, "kad", "gkabar", 0)
+                    self._distribute_channel(seg, "kap", "gkabar",
+                                             params.soma_kap*(1+xdist/100))
 
     def add_basal_tree_mechanisms(self):
         for s in self.dend:
             sec = s.hoc
-  
             sec.insert("na3dend")
             sec.insert("nap")
             sec.gnabar_nap = params.soma_nap_gnabar
@@ -454,6 +436,7 @@ class Combe2018Cell(Cell):
             sec.gkabar_kap = params.dend_kap
             sec.insert("h")
             sec.gbar_h = params.soma_hbar
+            sec.ek = params.potK
             sec.insert("kdr")
             sec.gbar_na3dend = params.gnadend
             sec.gkdrbar_kdr = params.gkdrdend
@@ -463,15 +446,14 @@ class Combe2018Cell(Cell):
             sec.e_pas = params.e_pas
             sec.Ra = params.Ra_basal
             sec.cm = params.Cm_basal
-            sec.ek = -80
-            
+
     def add_calcium(self, decay=True):
         if decay:
-            ca_sections = [self.soma] + self.trunk + self.apic
-            for section in ca_sections:
+            ca_sections = [self.soma] +  self.trunk + self.apic
+            for section in self.secs:
                 section.hoc.insert("cad")
                 section.hoc.taur_cad = params.taur_cad
-                section.hoc.eca = 140#params.potCa
+                section.hoc.eca = params.potCa
         else:
             print("Unimplemented mechanism")
 
@@ -483,10 +465,11 @@ class Combe2018Cell(Cell):
             Folder with channels
         """
         Cell.__init__(self, name=name, compile_paths=compile_paths)
+
         self.make_morphology()
         # adjust segment_number
         for sec in self.secs:
-            sec.hoc.nseg = 1 + int(sec.hoc.L/maximum_segment_length)
+            sec.hoc.nseg = 1+int(sec.hoc.L/maximum_segment_length)
         h.distance()
         self.add_soma_mechanisms()
         self.add_axon_mechanisms()
@@ -494,12 +477,6 @@ class Combe2018Cell(Cell):
         self.add_apical_mechanisms()
         self.add_basal_tree_mechanisms()
         self.ObliqueTrunkSection = self.trunk[17]
-        self.BasalTrunkSection = self.trunk[7]
-
+        self.BasalTrunkSection   = self.trunk[7]
         
-        h.celsius = 34
         self.add_calcium()
-        for sec in self.secs:
-            if h.ismembrane("ca_ion", sec=sec.hoc):
-                sec.hoc.eca = 140
-                h.ion_style("ca_ion",0, 1, 0, 0, 0, sec=sec.hoc)
