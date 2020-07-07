@@ -16,9 +16,8 @@ h.load_file('stdrun.hoc')
 
 
 class Simulation:
-    def __init__(self, init_v=None, dt=0.025, warmup=1, init_sleep=0,
-                 shape_plots=(),
-                 constant_timestep=True, with_neuron_gui=False):
+    def __init__(self, init_v=None, dt=0.025, warmup=1, init_sleep=0, shape_plots=(),
+                 constant_timestep=True, with_neuron_gui=False, check_pointers=False):
         """
         Create an Simulation object to control the NEURON's simulation.
 
