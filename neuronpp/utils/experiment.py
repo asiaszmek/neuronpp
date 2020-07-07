@@ -1,143 +1,143 @@
-from neuron import h
+from collections import namedtuple
+
 from neuronpp.utils.iclamp import IClamp
-from neuronpp.core.hocwrappers.sec import Sec
+from neuronpp.core.hocwrappers.seg import Seg
 from neuronpp.core.cells.netstim_cell import NetStimCell
-from neuronpp.core.hocwrappers.composed.synapse import Synapse
-from neuronpp.core.hocwrappers.composed.complex_synapse import ComplexSynapse
+from neuronpp.core.hocwrappers.synapses.synapse import Synapse
+
+EpspProtocol = namedtuple("EpspProtocol", "num init int w delay thr syn")
+IClampProtocol = namedtuple("IClampProtocol", "num init int dur amp seg")
 
 
 class Experiment:
-    def __init__(self):
+    def __init__(self, iti: float):
         """
-        Experimental object which allows to create STDP-like protocols of stimulations.
-        """
-        self.netstims = []
-        self.iclamps = []
+        Experimental object which allows to create protocols of stimulations.
 
-    def make_protocol(self, protocol: str, start, isi=1, iti=1, epsp_synapse: [Synapse, ComplexSynapse] = None,
-                      i_clamp_section: Sec = None, train_number=1, copy_netconn_params=True):
-        """
-        Create an experimental protocol of EPSPs and APs.
+        Creates an experimental protocol of EPSPs and IClamp:
+          * It consist of one or more blocks of Trains
+          * Each Train consists of one or more protocols
+          * During each Train all protocols defined will be computed
+          * Protocol can be EPSP or IClamp
+          * Interval between Trains define: iti value (Inter-Train-Interval)
+          * After one block of Train:
+             * we choose the end-time of the longest protocol and call it max_time
+             * we add iti value to the max_time
+             * we update start time of each protocol as: max_time + init value of each protocol
 
-        Each element of the experiment (EPSP or AP) is separated by isi (in ms).
-
-        :param protocol:
-            string eg. 3xEPSP[int=10,w=2.5,thr=5,del=2] 3xAP[int=10,dur=3,amp=1.6]
-
-            Params ofr EPSP and AP:
-            int - interval between in ms
-
-            Params for EPSP only:
-            w - weight for netconn (default is 1.0) -> used only when copy_netconn_params=False
-            del - delay for netconn (default is 1.0) -> used only when copy_netconn_params=False
-            thr - threshold for netconn (default is 10) -> used only when copy_netconn_params=False
-
-            Params for AP only:
-            dur - duration of AP in ms
-            amp - amplitude in nA
-
-        :param epsp_synapse:
-            synapse to stimulate. Default is None if you don't want to stimulate synapse
-        :param i_clamp_section:
-            section to input IClamp. Default is None if you don't want to stimulate any section by electrode (eg. making AP)
-            It is assumed that IClamp stimulate i_clamp_section(0.5) segment.
-        :param start:
-            start time of the first stimuli in ms, it is absolute time, so bear in mind warmup time.
-        :param isi:
-            Inter Stimulus Interval, eg. 3xEPSP,2xAP -isi- 3xEPSP,2xAP
         :param iti:
-            Inter Train Interval eg. 3xEPSP,2xAP -isi- 3xEPSP,2xAP -iti- 3xEPSP,2xAP-isi-3xEPSP,2xAP
+            in ms.
+            Inter Train Interval - after executing each protocol, we wait iti-time and then execute
+            once againt the same set of experimental trainings, eg:
+                [3xEPSP,2xAP] -ITI- [3xEPSP,2xAP]
+
+            It is used only if during build() train_number > 1
+
+        """
+        self.iti = iti
+        self.iclamp = []
+        self.netstims = []
+
+        self.epsp_protocols = []
+        self.iclamp_protocols = []
+        self._builded = False
+
+    def add_iclamp(self, num: int, segment: Seg, init: float = 0, interval: float = 0,
+                   dur: float = 0, amp: float = 0):
+        """
+        Add IClamp Protocol to the experiment.
+        It function as the equivalent of Action Potential for the cell,
+        especially if it is injected around soma(0.5).
+
+        :param num:
+            number of execution of this protocol
+        :param init:
+            start time of the first stimuli in ms, it is absolute time, so bear in mind warmup time.
+            Default is 0
+        :param interval:
+            interval between each each IClamps in ms. Default is 0
+        :param dur:
+            duration of IClamp in ms
+        :param amp:
+            amplitude in nA
+        :param segment:
+            segment to input IClamp eg. soma(0.5)
+        """
+        protocol = IClampProtocol(num=num, init=init, int=interval, dur=dur, amp=amp, seg=segment)
+        self.iclamp_protocols.append(protocol)
+
+    def add_epsp(self, num: int, synapse: Synapse, init: float = 0, interval: float = 0, 
+                 weight: float = 1.0, delay: float = 1.0, thr: float = 10):
+        """
+        Add EPSP (Excitatory Post Synaptic Potential) Protocol to the experiment.
+
+        :param num:
+            number of execution of this protocol
+        :param init:
+            start time of the first stimuli in ms, it is absolute time, so bear in mind warmup time.
+            Default is 0
+        :param interval:
+            interval between each EPSP in ms. Default is 0
+        :param weight:
+            weight for netconn. Default is 1.0 -> used only when copy_netconn_params=False
+        :param delay:
+            delay for netconn. Default is 1.0 -> used only when copy_netconn_params=False
+        :param thr:
+            threshold for netconn. Default is 10 -> used only when copy_netconn_params=False
+        :param synapse:
+            synapse to stimulate
+        """
+        protocol = EpspProtocol(num=num, init=init, int=interval, w=weight, delay=delay, thr=thr, syn=synapse)
+        self.epsp_protocols.append(protocol)
+
+    def build(self, train_number=1):
+        """
         :param train_number:
             number of trains. Default is 1
-        :param copy_netconn_params:
-            If copy_netconn_params=True it will copy NetConn params from the last NetConn added to the synapse.
-        :return:
-            tuple(NetStim, IClamp).
-            If epsp_synapse is None NetStim will be None
-            If i_clamp_section is None IClamp will be None
         """
-        #if start < h.t:
-        #    raise ValueError("Experimental protocol 'start' param must > h.t (time of the simulation), but your "
-        #                     "start=%s and h.t=%s. Bear in mind that 'start' param is the absolute time" % (start, h.t))
+        if self._builded:
+            raise ValueError("You cannot build Experiment which have been already built.")
+        self._builded = True
 
-        protocol = protocol.lower()
-        protocols = protocol.split(" ")
-
-        netstim = None
-        if epsp_synapse:
-            netstim = NetStimCell(name="stim")
-            self.netstims.append(netstim)
-
-        iclamp = None
-        if i_clamp_section:
-            iclamp = IClamp(i_clamp_section(0.5))
-            self.iclamps.append(iclamp)
-
-        event_time = start
+        global_time = 0
         for train_no in range(train_number):
+            new_global_time = global_time
 
-            for p in protocols:
-                event_time = self._prepare_protocol(p, netstim, iclamp, event_time, epsp_synapse, copy_netconn_params)
-                event_time += isi
+            for e in self.epsp_protocols:
+                new_time = self._prepare_epsp_protocol(e, global_time)
+                if new_time > new_global_time:
+                    new_global_time = new_time
 
-            event_time += iti
-            return netstim, iclamp
+            for i in self.iclamp_protocols:
+                new_time = self._prepare_iclamp_protocol(i, global_time)
+                if new_time > new_global_time:
+                    new_global_time = new_time
 
-    def _prepare_protocol(self, protocol, netstim, iclamp, event_time, epsp_synapse, copy_netconn_params):
-        protocol, params = protocol.split("[")
+            global_time = new_global_time
+            global_time += self.iti
 
-        num, ptype = protocol.split("x")
-        num = int(num)
+    def _prepare_epsp_protocol(self, epsp: EpspProtocol, global_time):
+        synapse = epsp.syn
+        current_time = global_time + epsp.init
 
-        dur = 0
-        amp = 0
-        weight = 1.0
-        threshold = 10
-        delay = 1.0
-        interval = 0
+        netstim = NetStimCell(name="stim")
+        self.netstims.append(netstim)
 
-        for par in params.replace("]", "").split(","):
-            name, val = par.split('=')
-            name = name.strip()
-            val = val.strip()
-            if name == 'int':
-                interval = int(val)
-            elif name == 'w':
-                weight = float(val)
-            elif name == 'thr':
-                threshold = float(val)
-            elif name == 'dur':
-                dur = int(val)
-            elif name == 'del':
-                delay = int(val)
-            elif name == 'amp':
-                amp = float(val)
+        stim = netstim.make_netstim(start=current_time, number=epsp.num, interval=epsp.int)
+        synapse.add_netcon(source=stim, weight=epsp.w, threshold=epsp.thr, delay=epsp.delay)
+        current_time += epsp.int * epsp.num
 
-        if ptype == 'epsp':
-            stim = netstim.make_netstim(event_time, number=num, interval=interval)
+        return current_time
 
-            if isinstance(epsp_synapse, ComplexSynapse):
-                for s in epsp_synapse.values():
-                    self._set_source(stim, s, weight, threshold, delay, copy_netconn_params)
-            else:
-                self._set_source(stim, epsp_synapse, weight, threshold, delay, copy_netconn_params)
+    def _prepare_iclamp_protocol(self, iclamp: IClampProtocol, global_time):
+        iclamp_obj = IClamp(iclamp.seg)
+        current_time = global_time + iclamp.init
 
-            event_time += interval * num
+        for _ in range(iclamp.num):
+            iclamp_obj.stim(delay=current_time, dur=iclamp.dur, amp=iclamp.amp)
+            current_time += iclamp.int
+        current_time = global_time
+        current_time += iclamp.init
 
-        elif ptype == 'ap':
-            for _ in range(num):
-                iclamp.stim(delay=event_time, dur=dur, amp=amp)
-                event_time += interval
-        else:
-            raise TypeError("Only allowed types are EPSP or AP.")
-
-        return event_time
-
-    @staticmethod
-    def _set_source(stim, syn, weight, threshold, delay, copy_netconn_params):
-        if copy_netconn_params:
-            nc = syn.netcons[-1]
-            delay = nc.hoc.delay
-            weight = nc.hoc.weight[0]
-            threshold = nc.hoc.threshold
-        syn.add_source(source=stim, weight=weight, threshold=threshold, delay=delay)
+        self.iclamp.append(iclamp_obj)
+        return current_time

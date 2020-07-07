@@ -1,3 +1,4 @@
+pytest
 matplotlib
 seaborn
 numpy
@@ -6,4 +7,5 @@ cython
 wheel
 pynput
 pandas
-pytest
+pyvis
+
