@@ -1,0 +1,10 @@
+pytest
+matplotlib
+seaborn
+numpy
+scipy
+cython
+wheel
+pynput
+pandas
+pyvis
