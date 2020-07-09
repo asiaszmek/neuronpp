@@ -9,7 +9,7 @@ UNITS {
 }
 
 NEURON {
-	SUFFIX kcas
+	SUFFIX SK_channels
 	USEION ca READ cai
 	USEION k WRITE ik
 	RANGE  gk,gbar,km,oinf,ik,n,otau

@@ -28,7 +28,7 @@ TITLE Slow Ca-dependent potassium current
                             INDEPENDENT {t FROM 0 TO 1 WITH 1 (ms)}
 
                             NEURON {
-                                    SUFFIX kca
+                                    SUFFIX SK_channel
                                     USEION k READ ek WRITE ik
                                     USEION ca READ cai
                                     RANGE gk, gbar, m_inf, tau_m

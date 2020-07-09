@@ -161,7 +161,7 @@ forsec soma_list {
                 insert kap gkabar_kap = KMULTP
        		//insert km gbar_km=soma_km
             	insert carF gcabar_carF = soma_caR vha_carF=caR_vact ti_carF=caR_tinact           
-            	//insert kca gbar_kca = soma_sAHP  // sAHP       
+            	//insert SK_channel gbar_SK_channel = soma_sAHP  // sAHP       
             	insert kmAHP gkbar_kmAHP = soma_mAHP  // mAHP      
        		insert cad    // calcium pump/buffering mechanism
 }
@@ -174,7 +174,7 @@ forsec dendrite_list {
 		insert kad gkabar_kad=0
        		//insert km gbar_km=soma_km
             	insert carF gcabar_carF = caR_init vha_carF=caR_vact ti_carF=caR_tinact            
-            	//insert kca gbar_kca = sAHP_init  // sAHP       
+            	//insert SK_channel gbar_SK_channel = sAHP_init  // sAHP       
             	insert kmAHP gkbar_kmAHP = mAHP_init  // mAHP      
        		insert cad    // calcium pump/buffering mechanism
        		insert ds

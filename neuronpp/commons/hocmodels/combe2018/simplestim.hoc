@@ -59,7 +59,7 @@ xopen("cell-setup.hoc")                                             // specify a
 
 ///////////////////Load File//////////////////////
 
-//if(!back) load_file("kca.ses")
+//if(!back) load_file("SK_channel.ses")
 if(!back) { load_file("print.ses") }
 /*cvode_active(1)*/
 

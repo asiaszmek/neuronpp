@@ -93,7 +93,7 @@ soma_caT =0.0003
 soma_km=0*0.001
 potNa=50
 BK_channel_init =0.9*1.5*0.03 //0.03 flag
-soma_kca =0.7*4.5*0.0001//0.003 flag
+soma_SK_channel =0.7*4.5*0.0001//0.003 flag
 soma_kap =7*0.0005
 soma_hbar =1.8e-6
 soma_kad =7*0.0005
@@ -144,9 +144,9 @@ forsec "soma" {
     	//gcabar_somacar = gsomacar
 	insert car // HVAm Ca++-R type current
 	gcabar_car = gsomacar
-	insert kca   // K(Ca) mAHP potassium type current
-		cac_kca=0.00075 //0.0005
-		gbar_kca = 0.5*soma_kca
+	insert SK_channel   // K(Ca) mAHP potassium type current
+		cac_SK_channel=0.00075 //0.0005
+		gbar_SK_channel = 0.5*soma_SK_channel
 	insert BK_channel // K(Ca) fAHP potassium type current
 		gkbar_BK_channel = 5.5*BK_channel_init        
 	insert cad  // calcium pump/buffering mechanism 
@@ -213,25 +213,25 @@ forsec apical_trunk_list {
 		} 
 	}
 	//<<<NDF
-	//NDF>>> apical_kca_insert($o1)      // Inserting K(Ca) sAHP and mAHP potassium currents
-	kca_distal_maxfactor = 1   //ORIG>> maximum cond. factor in dendrites
-	//ORIG>>// kca_distal_maxfactor = 0 //maximum cond. factor in dendrites
-    kca_distal_distance  = 200 //ORIG>> distance in dendrites for maximum cond.
+	//NDF>>> apical_SK_channel_insert($o1)      // Inserting K(Ca) sAHP and mAHP potassium currents
+	SK_channel_distal_maxfactor = 1   //ORIG>> maximum cond. factor in dendrites
+	//ORIG>>// SK_channel_distal_maxfactor = 0 //maximum cond. factor in dendrites
+    SK_channel_distal_distance  = 200 //ORIG>> distance in dendrites for maximum cond.
 	for (x) {  
 		xdist = find_vector_distance_precise(secname(),x)
 		xdist = distance(x)
-		fr = xdist/kca_distal_distance 
+		fr = xdist/SK_channel_distal_distance 
 		insert cad    // calsium pump/buffering mechanism
 			taur_cad=20
-		insert kca    // slow AHP K++ current
-			cac_kca=0.00075 //0.0005
+		insert SK_channel    // slow AHP K++ current
+			cac_SK_channel=0.00075 //0.0005
 		insert BK_channel  // medium AHP K++ current
 
-		if (xdist < kca_distal_distance && xdist > 50) {       
-			gbar_kca(x) = 5*soma_kca
+		if (xdist < SK_channel_distal_distance && xdist > 50) {       
+			gbar_SK_channel(x) = 5*soma_SK_channel
 			gkbar_BK_channel = 2*BK_channel_init
 		} else {
-			gbar_kca(x) = 0.5*soma_kca
+			gbar_SK_channel(x) = 0.5*soma_SK_channel
 			gkbar_BK_channel = 0.5*BK_channel_init
 		}
 	}
@@ -316,26 +316,26 @@ forsec apical_non_trunk_list {
 		} 
     }
 	//<<<NDF
-	//NDF>>> apical_kca_insert($o1)      // Inserting K(Ca) sAHP and mAHP potassium currents
-	kca_distal_maxfactor = 1 // ORIG>> maximum cond. factor in dendrites")
-	// ORIG>>//kca_distal_maxfactor = 0 // maximum cond. factor in dendrites
-	kca_distal_distance = 200 // ORIG>> distance in dendrites for maximum cond.")
+	//NDF>>> apical_SK_channel_insert($o1)      // Inserting K(Ca) sAHP and mAHP potassium currents
+	SK_channel_distal_maxfactor = 1 // ORIG>> maximum cond. factor in dendrites")
+	// ORIG>>//SK_channel_distal_maxfactor = 0 // maximum cond. factor in dendrites
+	SK_channel_distal_distance = 200 // ORIG>> distance in dendrites for maximum cond.")
   
 	for (x) {  
 		xdist = find_vector_distance_precise(secname(),x)
 		xdist=distance(x)
-		fr = xdist/kca_distal_distance 
+		fr = xdist/SK_channel_distal_distance 
 		insert cad    // calsium pump/buffering mechanism
 		taur_cad=20
-		insert kca    // slow AHP K++ current
-		cac_kca=0.00075 //0.0005
+		insert SK_channel    // slow AHP K++ current
+		cac_SK_channel=0.00075 //0.0005
 		insert BK_channel  // medium AHP K++ current
 
-		if (xdist < kca_distal_distance && xdist > 50) {       
-			gbar_kca(x) = 5*soma_kca
+		if (xdist < SK_channel_distal_distance && xdist > 50) {       
+			gbar_SK_channel(x) = 5*soma_SK_channel
 			gkbar_BK_channel = 2*BK_channel_init
 		} else {
-			gbar_kca(x) = 0.5*soma_kca
+			gbar_SK_channel(x) = 0.5*soma_SK_channel
 			gkbar_BK_channel = 0.5*BK_channel_init
 		}
 	}

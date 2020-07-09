@@ -33,7 +33,7 @@ BK_channel_init = 0.9*1.5*0.03  # 0.03 flag
 soma_nap_gnabar = 0*.5*0.000014
 soma_K_nap = 4.5
 soma_vhalf_nap = -60.4
-soma_kca = 0.7*4.5*0.0001  # 0.003 flag
+soma_SK_channel = 0.7*4.5*0.0001  # 0.003 flag
 soma_kap = 7*0.0005
 soma_hbar = 1.8e-6
 soma_kad = 7*0.0005
@@ -50,16 +50,16 @@ e_pas = -70
 potK = -80
 soma_K_h = 8.8
 soma_vhalf_h = -82
-cac_kca = 0.00075
-gbar_kca = 0.5*soma_kca
+cac_SK_channel = 0.00075
+gbar_SK_channel = 0.5*soma_SK_channel
 gkbar_BK_channel = 5.5*BK_channel_init
 
 
 caT_distal_maxfactor = 4
 caT_distal_distance = 350
 
-kca_distal_maxfactor = 1   # ORIG>> maximum cond. factor in dendrites
-kca_distal_distance = 200  # ORIG>> distance in dendrites for maximum cond.
+SK_channel_distal_maxfactor = 1   # ORIG>> maximum cond. factor in dendrites
+SK_channel_distal_distance = 200  # ORIG>> distance in dendrites for maximum cond.
 
 dend_kap = 0.0025036
 

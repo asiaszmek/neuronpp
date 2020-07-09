@@ -472,13 +472,13 @@ class TestFindingSectionsWithMechs(unittest.TestCase):
             else:
                 cls.cell.connect_secs(dend, cls.dends[i - 1])
         cls.cell.insert("calH", "dend", gcalbar=0.0002)
-        cls.cell.insert("kca", "dend", gbar=0.00075)
-        cls.regions = cls.cell.filter_secs("dend", as_list=True)
-        cls.cell.add_spines_by_density(cls.regions, 0.02, "thin", add_pas=True)
+        cls.cell.insert("SK_channel", "dend", gbar=0.00075)
+        regions = cls.cell.filter_secs("dend", as_list=True)
+        cls.cell.add_spines_by_density(regions, 0.02, "thin", add_pas=True)
         cls.cell.insert("calH", "head", gcalbar=0.0001)
 
         cls.find_calH = cls.cell.get_spines_by_section("calH")
-        cls.find_kca = cls.cell.get_spines_by_section("kca")
+        cls.find_SK_channel = cls.cell.get_spines_by_section("SK_channel")
         cls.find_all = cls.cell.get_spines_by_section(None)
 
     @classmethod
@@ -520,7 +520,7 @@ class TestFindingSectionsWithMechs(unittest.TestCase):
         self.assertEqual(len(dends), len(self.find_calH))
 
     def test_no_found_secs(self):
-        self.assertEqual({}, self.find_kca)
+        self.assertEqual({}, self.find_SK_channel)
 
     def test_all_dends_with_spines(self):
         dends = self.cell.filter_secs(obj_filter=lambda o: "dend" in o.name and
@@ -607,15 +607,15 @@ class TestCompensateForMechanism(unittest.TestCase):
                 cls.cell.connect_secs(dend, cls.dends[i - 1])
         cls.gbar_dend = 0.0002
         cls.gbar_spine = 0.0001
-        cls.gkca = 0.00075
+        cls.gSK_channel = 0.00075
         cls.cell.insert("calH", "dend", gcalbar=cls.gbar_dend)
-        cls.cell.insert("kca", "dend", gbar=cls.gkca)
-        cls.regions = cls.cell.filter_secs("dend", as_list=True)
-        cls.cell.add_spines_by_density(cls.regions, 0.02, "thin",
+        cls.cell.insert("SK_channel", "dend", gbar=cls.gSK_channel)
+        regions = cls.cell.filter_secs("dend", as_list=True)
+        cls.cell.add_spines_by_density(regions, 0.02, "thin",
                                        add_pas=True, spine_cm=10)
         cls.cell.insert("calH", "head", gcalbar=cls.gbar_spine)
         cls.cell.compensate(cm_adjustment=False, calH="gcalbar")
-        cls.cell.compensate(cm_adjustment=False, kca="gbar")
+        cls.cell.compensate(cm_adjustment=False, SK_channel="gbar")
         cls.cell.compensate(cm_adjustment=True)
 
     @classmethod
@@ -642,13 +642,13 @@ class TestCompensateForMechanism(unittest.TestCase):
         out = np.isclose(new_cm, self.dends[0].hoc.cm)
         self.assertTrue(out)
 
-    def test_kca1(self):
-        kca = set(self.dends[0].hoc.psection()["density_mechs"]["kca"]["gbar"])
-        self.assertEqual(len(kca), 1)
+    def test_SK_channel1(self):
+        SK_channel = set(self.dends[0].hoc.psection()["density_mechs"]["SK_channel"]["gbar"])
+        self.assertEqual(len(SK_channel), 1)
 
-    def test_kca2(self):
-        kca = self.dends[0].hoc.psection()["density_mechs"]["kca"]["gbar"]
-        out = np.isclose(kca[0], self.gkca)
+    def test_SK_channel2(self):
+        SK_channel = self.dends[0].hoc.psection()["density_mechs"]["SK_channel"]["gbar"]
+        out = np.isclose(SK_channel[0], self.gSK_channel)
         self.assertTrue(out)
 
     def test_calH1(self):
