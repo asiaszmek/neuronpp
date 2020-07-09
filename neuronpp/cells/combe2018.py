@@ -239,9 +239,9 @@ class Combe2018Cell(Cell):
         sec.insert("car")
         sec.gcabar_car = params.gsomacar
 
-        sec.insert("kca")
-        sec.cac_kca = params.cac_kca
-        sec.gbar_kca = params.gbar_kca
+        sec.insert("SK_channel")
+        sec.cac_SK_channel = params.cac_SK_channel
+        sec.gbar_SK_channel = params.gbar_SK_channel
 
         sec.insert("BK_channel")  # K(Ca) fAHP potassium type current
         sec.gkbar_BK_channel = params.gkbar_BK_channel
@@ -269,8 +269,8 @@ class Combe2018Cell(Cell):
             sec.insert("car")
             sec.gcabar_car = 0.1*params.soma_car
             sec.insert("cat")
-            sec.insert("kca")
-            sec.cac_kca = params.cac_kca
+            sec.insert("SK_channel")
+            sec.cac_SK_channel = params.cac_SK_channel
             sec.insert("calH")
             sec.insert("BK_channel")
             sec.insert("h")
@@ -315,14 +315,14 @@ class Combe2018Cell(Cell):
                     val = params.caT_distal_maxfactor*params.soma_caT*fr
                     self._distribute_channel(seg, "cat", "gcatbar", val)
 
-                if xdist < params.kca_distal_distance and xdist > 50:
-                    self._distribute_channel(seg, "kca", "gbar",
-                                             5*params.soma_kca)
+                if xdist < params.SK_channel_distal_distance and xdist > 50:
+                    self._distribute_channel(seg, "SK_channel", "gbar",
+                                             5*params.soma_SK_channel)
                     self._distribute_channel(seg, "BK_channel", "gkbar",
                                              2*params.BK_channel_init)
                 else:
-                    self._distribute_channel(seg, "kca", "gbar",
-                                             0.5*params.soma_kca)
+                    self._distribute_channel(seg, "SK_channel", "gbar",
+                                             0.5*params.soma_SK_channel)
                     self._distribute_channel(seg, "BK_channel", "gkbar",
                                              0.5*params.BK_channel_init)
 
@@ -356,8 +356,8 @@ class Combe2018Cell(Cell):
             sec.gcabar_car = 0.1*params.soma_car
 
             sec.insert("cat")
-            sec.insert("kca")
-            sec.cac_kca = params.cac_kca
+            sec.insert("SK_channel")
+            sec.cac_SK_channel = params.cac_SK_channel
 
             sec.insert("BK_channel")
             sec.insert("h")
@@ -401,14 +401,14 @@ class Combe2018Cell(Cell):
                     val = params.caT_distal_maxfactor*params.soma_caT*fr
                     self._distribute_channel(seg, "cat", "gcatbar", val)
 
-                if xdist < params.kca_distal_distance and xdist > 50:
-                    self._distribute_channel(seg, "kca", "gbar",
-                                             5*params.soma_kca)
+                if xdist < params.SK_channel_distal_distance and xdist > 50:
+                    self._distribute_channel(seg, "SK_channel", "gbar",
+                                             5*params.soma_SK_channel)
                     self._distribute_channel(seg, "BK_channel", "gkbar",
                                              2*params.BK_channel_init)
                 else:
-                    self._distribute_channel(seg, "kca", "gbar",
-                                             0.5*params.soma_kca)
+                    self._distribute_channel(seg, "SK_channel", "gbar",
+                                             0.5*params.soma_SK_channel)
                     self._distribute_channel(seg, "BK_channel", "gkbar",
                                              0.5*params.BK_channel_init)
 
