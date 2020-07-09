@@ -51,7 +51,7 @@ soma_caT =0.0003
 soma_km=0*0.001
 potNa=50
 BK_channel_init =0.9*1.5*0.03 //0.03 flag
-soma_SK_channel =0.7*4.5*0.0001//0.003 flag
+soma_kca =0.7*4.5*0.0001//0.003 flag
 soma_kap =7*0.0005
 soma_hbar =1.8e-6
 soma_kad =7*0.0005
@@ -97,9 +97,9 @@ forsec "soma" {
 		gcatbar_cat = soma_caT
 	insert car // HVAm Ca++-R type current
 	gcabar_car = gsomacar
-	insert SK_channel   // K(Ca) mAHP potassium type current
-		cac_SK_channel=0.00075 //0.0005
-		gbar_SK_channel = 0.5*soma_SK_channel
+	insert kca   // K(Ca) mAHP potassium type current
+		cac_kca=0.00075 //0.0005
+		gbar_kca = 0.5*soma_kca
 	insert BK_channel // K(Ca) fAHP potassium type current
 		gkbar_BK_channel = 5.5*BK_channel_init        
 	insert cad  // calcium pump/buffering mechanism 
@@ -162,16 +162,16 @@ forsec apical_trunk_list {
 		fr = xdist/SK_channel_distal_distance 
 		insert cad    // calsium pump/buffering mechanism
 			taur_cad=20
-		insert SK_channel    // slow AHP K++ current
-			cac_SK_channel=0.00075 //0.0005
+		insert kca    // slow AHP K++ current
+			cac_kca=0.00075 //0.0005
 		insert BK_channel  // medium AHP K++ current
 
-		if (xdist < SK_channel_distal_distance && xdist > 50) {       
-			gbar_SK_channel(x) = 5*soma_SK_channel
-			gkbar_BK_channel(x) = 2*BK_channel_init
+		if (xdist < kca_distal_distance && xdist > 50) {       
+			gbar_kca(x) = 5*soma_kca
+			gkbar_BK_channel = 2*BK_channel_init
 		} else {
-			gbar_SK_channel(x) = 0.5*soma_SK_channel
-			gkbar_BK_channel(x) = 0.5*BK_channel_init
+			gbar_kca(x) = 0.5*soma_kca
+			gkbar_BK_channel = 0.5*BK_channel_init
 		}
 	}
 	insert h
@@ -254,16 +254,16 @@ forsec apical_non_trunk_list {
 		fr = xdist/SK_channel_distal_distance 
 		insert cad    // calsium pump/buffering mechanism
 		taur_cad=20
-		insert SK_channel    // slow AHP K++ current
-		cac_SK_channel=0.00075 //0.0005
+		insert kca    // slow AHP K++ current
+		cac_kca=0.00075 //0.0005
 		insert BK_channel  // medium AHP K++ current
 
-		if (xdist < SK_channel_distal_distance && xdist > 50) {       
-			gbar_SK_channel(x) = 5*soma_SK_channel
-			gkbar_BK_channel(x) = 2*BK_channel_init
+		if (xdist < kca_distal_distance && xdist > 50) {       
+			gbar_kca(x) = 5*soma_kca
+			gkbar_BK_channel = 2*BK_channel_init
 		} else {
-			gbar_SK_channel(x) = 0.5*soma_SK_channel
-			gkbar_BK_channel(x) = 0.5*BK_channel_init
+			gbar_kca(x) = 0.5*soma_kca
+			gkbar_BK_channel = 0.5*BK_channel_init
 		}
 
 	}
