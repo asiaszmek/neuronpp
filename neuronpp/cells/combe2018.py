@@ -243,8 +243,8 @@ class Combe2018Cell(Cell):
         sec.cac_kca = params.cac_kca
         sec.gbar_kca = params.gbar_kca
 
-        sec.insert("mykca")  # K(Ca) fAHP potassium type current
-        sec.gkbar_mykca = params.gkbar_mykca
+        sec.insert("BK_channel")  # K(Ca) fAHP potassium type current
+        sec.gkbar_BK_channel = params.gkbar_BK_channel
 
     def add_axon_mechanisms(self):
         sec = self.axon.hoc
@@ -272,7 +272,7 @@ class Combe2018Cell(Cell):
             sec.insert("kca")
             sec.cac_kca = params.cac_kca
             sec.insert("calH")
-            sec.insert("mykca")
+            sec.insert("BK_channel")
             sec.insert("h")
             sec.insert("kap")
             sec.insert("kad")
@@ -318,13 +318,13 @@ class Combe2018Cell(Cell):
                 if xdist < params.kca_distal_distance and xdist > 50:
                     self._distribute_channel(seg, "kca", "gbar",
                                              5*params.soma_kca)
-                    self._distribute_channel(seg, "mykca", "gkbar",
-                                             2*params.mykca_init)
+                    self._distribute_channel(seg, "BK_channel", "gkbar",
+                                             2*params.BK_channel_init)
                 else:
                     self._distribute_channel(seg, "kca", "gbar",
                                              0.5*params.soma_kca)
-                    self._distribute_channel(seg, "mykca", "gkbar",
-                                             0.5*params.mykca_init)
+                    self._distribute_channel(seg, "BK_channel", "gkbar",
+                                             0.5*params.BK_channel_init)
 
                 if xdist > 500:
                     xdist = 500
@@ -359,7 +359,7 @@ class Combe2018Cell(Cell):
             sec.insert("kca")
             sec.cac_kca = params.cac_kca
 
-            sec.insert("mykca")
+            sec.insert("BK_channel")
             sec.insert("h")
             sec.insert("kap")
             sec.insert("kad")
@@ -404,13 +404,13 @@ class Combe2018Cell(Cell):
                 if xdist < params.kca_distal_distance and xdist > 50:
                     self._distribute_channel(seg, "kca", "gbar",
                                              5*params.soma_kca)
-                    self._distribute_channel(seg, "mykca", "gkbar",
-                                             2*params.mykca_init)
+                    self._distribute_channel(seg, "BK_channel", "gkbar",
+                                             2*params.BK_channel_init)
                 else:
                     self._distribute_channel(seg, "kca", "gbar",
                                              0.5*params.soma_kca)
-                    self._distribute_channel(seg, "mykca", "gkbar",
-                                             0.5*params.mykca_init)
+                    self._distribute_channel(seg, "BK_channel", "gkbar",
+                                             0.5*params.BK_channel_init)
 
                 if xdist > 500:
                     xdist = 500

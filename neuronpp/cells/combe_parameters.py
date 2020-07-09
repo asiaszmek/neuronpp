@@ -29,7 +29,7 @@ soma_calH = 0.0001  # 0.00017
 soma_caT = 0.0003
 soma_km = 0.001
 potNa = 50
-mykca_init = 0.9*1.5*0.03  # 0.03 flag
+BK_channel_init = 0.9*1.5*0.03  # 0.03 flag
 soma_nap_gnabar = 0*.5*0.000014
 soma_K_nap = 4.5
 soma_vhalf_nap = -60.4
@@ -52,7 +52,7 @@ soma_K_h = 8.8
 soma_vhalf_h = -82
 cac_kca = 0.00075
 gbar_kca = 0.5*soma_kca
-gkbar_mykca = 5.5*mykca_init
+gkbar_BK_channel = 5.5*BK_channel_init
 
 
 caT_distal_maxfactor = 4
