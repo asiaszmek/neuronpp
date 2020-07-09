@@ -92,7 +92,7 @@ soma_caLH =0.0001 // 0.00017
 soma_caT =0.0003
 soma_km=0*0.001
 potNa=50
-mykca_init =0.9*1.5*0.03 //0.03 flag
+BK_channel_init =0.9*1.5*0.03 //0.03 flag
 soma_kca =0.7*4.5*0.0001//0.003 flag
 soma_kap =7*0.0005
 soma_hbar =1.8e-6
@@ -147,8 +147,8 @@ forsec "soma" {
 	insert kca   // K(Ca) mAHP potassium type current
 		cac_kca=0.00075 //0.0005
 		gbar_kca = 0.5*soma_kca
-	insert mykca // K(Ca) fAHP potassium type current
-		gkbar_mykca = 5.5*mykca_init        
+	insert BK_channel // K(Ca) fAHP potassium type current
+		gkbar_BK_channel = 5.5*BK_channel_init        
 	insert cad  // calcium pump/buffering mechanism 
 		taur_cad=20
 	//insert cabalan  // calcium pump/buffering mechanism
@@ -225,14 +225,14 @@ forsec apical_trunk_list {
 			taur_cad=20
 		insert kca    // slow AHP K++ current
 			cac_kca=0.00075 //0.0005
-		insert mykca  // medium AHP K++ current
+		insert BK_channel  // medium AHP K++ current
 
 		if (xdist < kca_distal_distance && xdist > 50) {       
 			gbar_kca(x) = 5*soma_kca
-			gkbar_mykca = 2*mykca_init
+			gkbar_BK_channel = 2*BK_channel_init
 		} else {
 			gbar_kca(x) = 0.5*soma_kca
-			gkbar_mykca = 0.5*mykca_init
+			gkbar_BK_channel = 0.5*BK_channel_init
 		}
 	}
 	//<<<NDF
@@ -329,14 +329,14 @@ forsec apical_non_trunk_list {
 		taur_cad=20
 		insert kca    // slow AHP K++ current
 		cac_kca=0.00075 //0.0005
-		insert mykca  // medium AHP K++ current
+		insert BK_channel  // medium AHP K++ current
 
 		if (xdist < kca_distal_distance && xdist > 50) {       
 			gbar_kca(x) = 5*soma_kca
-			gkbar_mykca = 2*mykca_init
+			gkbar_BK_channel = 2*BK_channel_init
 		} else {
 			gbar_kca(x) = 0.5*soma_kca
-			gkbar_mykca = 0.5*mykca_init
+			gkbar_BK_channel = 0.5*BK_channel_init
 		}
 	}
 	//<<<NDF

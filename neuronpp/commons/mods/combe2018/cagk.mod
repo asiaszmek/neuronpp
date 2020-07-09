@@ -14,7 +14,7 @@ UNITS {
 
 
 NEURON {
-	SUFFIX mykca
+	SUFFIX BK_channel
 	USEION ca READ cai
 	USEION k READ ek WRITE ik
 	RANGE gkbar,ik
