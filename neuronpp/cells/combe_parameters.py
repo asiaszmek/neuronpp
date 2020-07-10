@@ -1,5 +1,5 @@
 Rm_non_trunk = 36900  # Apical oblique specific membrane resistance
-Rm_basal = 15484.67  # Basal specific membrane resistance
+Rm_basal = 1/6.458e-05  # Basal specific membrane resistance
 Rm_tip = 36900  # Tip specific membrane resistance
 Rm_soma = 20000  # Somatic specific membrane resistance
 Rm_axon = 28000  # Axonal specific membrane resistance
@@ -22,12 +22,13 @@ Cm_non_trunk = 1.192    # Oblique specific capacitance
 Cm_non_trunk = 1.5     # Oblique specific capacitance
 Cm_basal = 1.144    # Basal specific capacitance
 Cm_tip = 1.192    # Apical tip specific capacitance
-soma_caL = 0.00006/10
+
+soma_caL = 0.00006
 soma_car = 0.00003
 gsomacar = 0.00008
 soma_calH = 0.0001  # 0.00017
 soma_caT = 0.0003
-soma_km = 0.001
+soma_km = 0*0.001
 potNa = 50
 BK_channel_init = 0.9*1.5*0.03  # 0.03 flag
 soma_nap_gnabar = 0*.5*0.000014
