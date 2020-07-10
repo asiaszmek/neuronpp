@@ -1,32 +1,70 @@
 
+back=0
 
 //////// load needed templates////////////
-load_file("nrngui.hoc")
+if(!back){ load_file("nrngui.hoc")               }
+if(!back){ load_file("template/ObliquePath.hoc") }
+if(!back){ load_file("template/BasalPath.hoc"  ) }
 load_file("../template/load_templates.hoc")
+objref econ,f1,f2,f3,ss,cvode
+f1= new File()
+f2= new File()
+f3= new File()
+ss=new SaveState()
+cvode = new CVode(1)
+x=cvode.active(1)
 
-objref econ                                                                  
-show_errs=1
-debug_lev=1
-econ=new ExperimentControl(show_errs,debug_lev)
-econ.self_define(econ)
-
-econ.morphology_dir = "../morphology/n123"       // set location for morphology files
-econ.add_lib_dir("Terrence","../lib")                     // set location for library files
-econ.generic_dir    = "../experiment"             // set location for cell-setup file 
-
+restart=0
 v_init=-70
 
-econ.xopen_geometry_dependent("cell")                                        // load raw cell morphology
-econ.xopen_geometry_dependent("cell-analysis")                               // load user-defined semantics on morphology
-cell_analysis(econ)
-printf("Opening cell setup\n")                                               // load cell-setup to
-econ.xopen_generic("cell-setup")                                             // specify all mechanisms,
-printf("Opened. Setting up cell\n")                                          // membrane properties etc
-cell_setup(econ)
+strdef morphology_location, morpho_path, ObliqueTrunkSection, BasalTrunkSection
+objref vRP, vAPEX
+
+proc xopen_morphology(){
+	sprint(morpho_path,"%s/%s",morphology_location,$s1)
+	xopen(morpho_path)
+}
+
+// Carmen
+morphology_location = "pc2b"
+ObliqueTrunkSection = "trunk[17]"
+BasalTrunkSection   = "trunk[7]"
+
+xopen_morphology("cell.hoc")				//reads morpholofy from the file
+xopen_morphology("cell-analysis-simple.hoc") //reads simplified version of CA 
+
+
+			// --------------- Creating lists-----------------
+
+xopen("lib/TP-lib.hoc")
+Tip_sections(apical_non_trunk_list,apical_trunk_list,"Apical")		
+objref apical_tip_list
+apical_tip_list=TP_list							// Apical Tip list
+
+print "apical_tip_list"
+apical_tip_list.printnames()
+print  "END apical_tip_list"
+
+objref tmp_pl[num_tips],pl[num_tips],opl[num_tips],degree_apical_tip,peri_trunk_list
+objref bl[num_tips],obl[num_tips],degree_basal_tip
+xopen("lib/Oblique-lib.hoc")
+oblique_sections(apical_tip_list,apical_trunk_list,num_tips)		// apical dendrite path lists and degree of tips
+
+xopen("lib/vector-distance.hoc")
+
+//-----------------------------------------------------------------------------------------------------
+printf("Setting up cell\n")                                         // load cell-setup to
+xopen("cell-setup.hoc")                                             // specify all mechanisms, membrane properties etc
+
 
 ///////////////////Load File//////////////////////
 
+
 load_file("sessio.ses")
+
+//////   Spike counter//////////
+
+
 cvode_active(1)
 
 //////   Spike counter//////////
