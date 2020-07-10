@@ -299,7 +299,11 @@ class Combe2018Cell(Cell):
             sec.cm = params.Cm_trunk
 
             for i, seg in enumerate(sec):
-                xdist = h.distance(seg, sec=self.soma.hoc)
+                if i == sec.nseg - 1:
+                    xdist = h.distance(sec(1.0))
+                else:
+                    xdist = h.distance(seg)
+
                 fr = xdist/params.caT_distal_distance
 
                 if xdist > 50:
@@ -318,15 +322,15 @@ class Combe2018Cell(Cell):
                 if xdist < params.SK_channel_distal_distance and xdist > 50:
                     self._distribute_channel(seg, "SK_channel", "gbar",
                                              5*params.soma_SK_channel)
-                    # self._distribute_channel(seg, "BK_channel", "gkbar",
-                    #                          2*params.BK_channel_init)
-                    sec.gkbar_BK_channel = 2*params.BK_channel_init
+                    self._distribute_channel(seg, "BK_channel", "gkbar",
+                                             2*params.BK_channel_init)
+
                 else:
                     self._distribute_channel(seg, "SK_channel", "gbar",
                                              0.5*params.soma_SK_channel)
-                    # self._distribute_channel(seg, "BK_channel", "gkbar",
-                    #                          0.5*params.BK_channel_init)
-                    sec.gkbar_BK_channel = 0.5*params.BK_channel_init
+                    self._distribute_channel(seg, "BK_channel", "gkbar",
+                                             0.5*params.BK_channel_init)
+
 
                 if xdist > 500:
                     xdist = 500
@@ -389,53 +393,55 @@ class Combe2018Cell(Cell):
             sec.cm = params.Cm_non_trunk
 
             for i, seg in enumerate(sec):
-                xdist = h.distance(seg)
+                if i == sec.nseg - 1:
+                    xdist = h.distance(sec(1.0))
+                else:
+                    xdist = h.distance(seg)
                 fr = xdist/params.caT_distal_distance
                 if xdist > 50:
-                    self._distribute_channel(seg, "calH", "gcalbar",
-                                             2*params.soma_calH)
+                    new_calH = 2*params.soma_calH
                 else:
-                    self._distribute_channel(seg, "calH", "gcalbar",
-                                             0.1*params.soma_calH)
+                    new_calH = 0.1*params.soma_calH
+
 
                 if xdist < 100:
-                    self._distribute_channel(seg, "cat", "gcatbar", 0)
+                    new_caT = 0
                 else:
-                    val = params.caT_distal_maxfactor*params.soma_caT*fr
-                    self._distribute_channel(seg, "cat", "gcatbar", val)
+                    new_caT = params.caT_distal_maxfactor*params.soma_caT*fr
 
                 if xdist < params.SK_channel_distal_distance and xdist > 50:
-                    self._distribute_channel(seg, "SK_channel", "gbar",
-                                             5*params.soma_SK_channel)
-                    # self._distribute_channel(seg, "BK_channel", "gkbar",
-                    #                          2*params.BK_channel_init)
-                    sec.gkbar_BK_channel = 2*params.BK_channel_init
+                    new_SK = 5*params.soma_SK_channel
+                    new_BK = 2*params.BK_channel_init
                 else:
-                    self._distribute_channel(seg, "SK_channel", "gbar",
-                                             0.5*params.soma_SK_channel)
-                    # self._distribute_channel(seg, "BK_channel", "gkbar",
-                    #                          0.5*params.BK_channel_init)
-                    sec.gkbar_BK_channel = 0.5*params.BK_channel_init
-
+                    new_SK = 0.5*params.soma_SK_channel
+                    new_BK = 0.5*params.BK_channel_init
                 if xdist > 500:
                     xdist = 500
-                val = params.soma_hbar*(1 + 3*xdist/100)
-                self._distribute_channel(seg, "h", "gbar", val)
-                if xdist > 100:
+                new_h = params.soma_hbar*(1 + 3*xdist/100)
+                if xdist < 100:
+                    h_vhalf = -81
+                    new_kad = 0
+                    new_kap = params.soma_kap*(1 + xdist/100)
+                else:
                     if xdist > 300:
                         new_dist = 300
                     else:
                         new_dist = xdist
-                    self._distribute_channel(seg, "h", "vhalf",
-                                             -81 - 8*(new_dist - 100)/200)
-                    self._distribute_channel(seg, "kad", "gkabar",
-                                             params.soma_kad*(1 + xdist/100))
-                    self._distribute_channel(seg, "kap", "gkabar", 0)
-                else:
-                    self._distribute_channel(seg, "h", "vhalf", -81)
-                    self._distribute_channel(seg, "kad", "gkabar", 0)
-                    self._distribute_channel(seg, "kap", "gkabar",
-                                             params.soma_kap*(1 + xdist/100))
+                    h_vhalf = -81 - 8*(new_dist - 100)/200
+                    new_kad = params.soma_kad*(1 + xdist/100)
+                    new_kap = 0
+
+                self._distribute_channel(seg, "calH", "gcalbar",
+                                         new_calH)
+                self._distribute_channel(seg, "cat", "gcatbar", new_caT)
+                self._distribute_channel(seg, "SK_channel", "gbar",
+                                         new_SK)
+                self._distribute_channel(seg, "BK_channel", "gkbar",
+                                         new_BK)
+                self._distribute_channel(seg, "h", "gbar", new_h)
+                self._distribute_channel(seg, "h", "vhalf", h_vhalf)
+                self._distribute_channel(seg, "kad", "gkabar", new_kad)
+                self._distribute_channel(seg, "kap", "gkabar", new_kap)
 
     def add_basal_tree_mechanisms(self):
         for s in self.dend:
