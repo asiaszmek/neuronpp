@@ -231,7 +231,7 @@ class Combe2018Cell(Cell):
         sec.ek = params.potK
 
         sec.insert("cal")
-        sec.gcalbar_cal = params.soma_caL
+        sec.gcalbar_cal = params.soma_caL/10
 
         sec.insert("cat")
         sec.gcatbar_cat = params.soma_caT
@@ -285,7 +285,7 @@ class Combe2018Cell(Cell):
             sec.vhalf_nap = params.soma_vhalf_nap
 
             sec.insert("kdr")
-            gkdrbar_kdr = params.gkdr
+            sec.gkdrbar_kdr = params.gkdr
             sec.ena = params.potNa
 
             sec.insert("km")
@@ -318,13 +318,15 @@ class Combe2018Cell(Cell):
                 if xdist < params.SK_channel_distal_distance and xdist > 50:
                     self._distribute_channel(seg, "SK_channel", "gbar",
                                              5*params.soma_SK_channel)
-                    self._distribute_channel(seg, "BK_channel", "gkbar",
-                                             2*params.BK_channel_init)
+                    # self._distribute_channel(seg, "BK_channel", "gkbar",
+                    #                          2*params.BK_channel_init)
+                    sec.gkbar_BK_channel = 2*params.BK_channel_init
                 else:
                     self._distribute_channel(seg, "SK_channel", "gbar",
                                              0.5*params.soma_SK_channel)
-                    self._distribute_channel(seg, "BK_channel", "gkbar",
-                                             0.5*params.BK_channel_init)
+                    # self._distribute_channel(seg, "BK_channel", "gkbar",
+                    #                          0.5*params.BK_channel_init)
+                    sec.gkbar_BK_channel = 0.5*params.BK_channel_init
 
                 if xdist > 500:
                     xdist = 500
@@ -372,7 +374,8 @@ class Combe2018Cell(Cell):
             sec.vhalf_nap = params.soma_vhalf_nap
 
             sec.insert("kdr")
-            gkdrbar_kdr = params.gkdr
+            sec.gkdrbar_kdr = params.gkdr
+            
             sec.ena = params.potNa
 
             sec.insert("km")
@@ -404,13 +407,15 @@ class Combe2018Cell(Cell):
                 if xdist < params.SK_channel_distal_distance and xdist > 50:
                     self._distribute_channel(seg, "SK_channel", "gbar",
                                              5*params.soma_SK_channel)
-                    self._distribute_channel(seg, "BK_channel", "gkbar",
-                                             2*params.BK_channel_init)
+                    # self._distribute_channel(seg, "BK_channel", "gkbar",
+                    #                          2*params.BK_channel_init)
+                    sec.gkbar_BK_channel = 2*params.BK_channel_init
                 else:
                     self._distribute_channel(seg, "SK_channel", "gbar",
                                              0.5*params.soma_SK_channel)
-                    self._distribute_channel(seg, "BK_channel", "gkbar",
-                                             0.5*params.BK_channel_init)
+                    # self._distribute_channel(seg, "BK_channel", "gkbar",
+                    #                          0.5*params.BK_channel_init)
+                    sec.gkbar_BK_channel = 0.5*params.BK_channel_init
 
                 if xdist > 500:
                     xdist = 500
@@ -458,7 +463,7 @@ class Combe2018Cell(Cell):
     def add_calcium(self, decay=True):
         if decay:
             ca_sections = [self.soma] + self.trunk + self.apic
-            for section in self.secs:
+            for section in ca_sections:
                 section.hoc.insert("cad")
                 section.hoc.taur_cad = params.taur_cad
                 section.hoc.eca = params.potCa
@@ -478,6 +483,7 @@ class Combe2018Cell(Cell):
         for sec in self.secs:
             sec.hoc.nseg = 1 + int(sec.hoc.L/maximum_segment_length)
         h.distance()
+        self.add_calcium()
         self.add_soma_mechanisms()
         self.add_axon_mechanisms()
         self.add_trunk_mechanisms()
@@ -485,4 +491,5 @@ class Combe2018Cell(Cell):
         self.add_basal_tree_mechanisms()
         self.ObliqueTrunkSection = self.trunk[17]
         self.BasalTrunkSection = self.trunk[7]
-        self.add_calcium()
+        
+        h.celsius = 34
