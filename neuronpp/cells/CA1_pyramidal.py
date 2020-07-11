@@ -5,14 +5,14 @@ from neuronpp.cells.morphology_points import axon_points
 from neuronpp.cells.morphology_points import trunk_points
 from neuronpp.cells.morphology_points import points_apic, points_apic_continued
 from neuronpp.cells.morphology_points import points_dend, points_dend_continued
-import neuronpp.cells.combe_parameters as params
+import neuronpp.cells.CA1_pyramidal_parameters as params
 
 
 path = os.path.dirname(os.path.abspath(__file__))
 f_path = os.path.join(path, "..", "commons/mods/CA1_pyramidal")
 maximum_segment_length = 75
 
-class Combe2018Cell(Cell):
+class CA1PyramidalCell(Cell):
     @staticmethod
     def _distribute_channel(x, mech, mech_param, val):
         mech_obj = getattr(x, mech)
@@ -295,7 +295,7 @@ class Combe2018Cell(Cell):
             sec.e_pas = params.e_pas
             sec.Ra = params.Ra_trunk
             sec.cm = params.Cm_trunk
-            sec.ek = -77
+            sec.ek = params.potK
             for i, seg in enumerate(sec):
                 if i == sec.nseg - 1:
                     xdist = h.distance(sec(1.0))
@@ -388,7 +388,7 @@ class Combe2018Cell(Cell):
             sec.e_pas = params.e_pas
             sec.Ra = params.Ra_non_trunk
             sec.cm = params.Cm_non_trunk
-            sec.ek = -80
+            sec.ek = params.potK
             for i, seg in enumerate(sec):
                 if i == sec.nseg - 1:
                     xdist = h.distance(sec(1.0))
@@ -462,7 +462,7 @@ class Combe2018Cell(Cell):
             sec.e_pas = params.e_pas
             sec.Ra = params.Ra_basal
             sec.cm = params.Cm_basal
-            sec.ek = -80
+            sec.ek = params.potK
             
     def add_calcium(self, decay=True):
         if decay:
