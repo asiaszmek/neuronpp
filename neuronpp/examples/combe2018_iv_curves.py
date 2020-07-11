@@ -1,32 +1,31 @@
-from neuron import h
 import numpy as np
 import matplotlib.pyplot as plt
 from neuronpp.cells.combe2018 import Combe2018Cell
-from neuronpp.utils.simulation import Simulation
-from neuronpp.utils.record import Record
-from neuronpp.utils.iclamp import IClamp
+import neuron
+
+
 # Create cell
-h.CVode()
-h.CVode().active(True)
+neuron.h.CVode()
+neuron.h.CVode().active(True)
 
 cell = Combe2018Cell(name="cell1")
 soma = cell.filter_secs("soma")
 
 fig, ax = plt.subplots(1, 1)
 injections = [-.1, 0, .100, .200]
+neuron.h.celsius = 34
 
 for inj in injections:
     print(inj)
-    ic = h.IClamp(soma.hoc(0.5))
-    rec_v = h.Vector().record(soma.hoc(0.5)._ref_v)
-    time = h.Vector().record(h._ref_t)
+    ic = neuron.h.IClamp(soma.hoc(0.5))
+    rec_v = neuron.h.Vector().record(soma.hoc(0.5)._ref_v)
+    time = neuron.h.Vector().record(neuron.h._ref_t)
     ic.delay = 300
     ic.dur = 1000
     ic.amp = inj
-    h.finitialize(-70)
-    h.fcurrent()
-    h.tstop = 1500
-    h.run()
+    neuron.h.finitialize(-70)
+    neuron.h.fcurrent()
+    neuron.run(1500)
     ax.plot(time, rec_v, label="%4.3fnA" % inj)
 
 f1 = open("combe_mine_apic.txt", "w")
@@ -43,9 +42,13 @@ for sec in cell.secs:
     else:
         f = f4
 
-    mechs = sec.hoc.psection()["density_mechs"]
-    for key, value in mechs.items():
-        f.write("%s %s " % (sec.hoc.name(), key) + str(value) + "\n")
+    mechs = sec.hoc.psection()
+    for key in sorted(mechs.keys()):
+        if isinstance(mechs[key], dict):
+            for new_key in  sorted(mechs[key].keys()):
+                f.write("%s %s %s " % (sec.hoc.name(), key, new_key) + str(mechs[key][new_key]) + "\n")
+        else:
+            f.write("%s %s " % (sec.hoc.name(), key) + str(mechs[key]) + "\n")
 
 ax.set_xlabel("time (s)")
 ax.set_ylabel("V (mV)")
