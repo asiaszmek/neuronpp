@@ -71,7 +71,7 @@ class Combe2018Cell(Cell):
         for i in range(51):
             self.dend.append(self.add_sec("dend_%i" % i))
 
-        self.connect_secs(self.soma, self.axon)
+        self.connect_secs( self.axon, self.soma)
         for i in range(19):
             if i == 0:
                 self.connect_secs(self.trunk[i], self.soma)
