@@ -9,7 +9,7 @@ proc cell_analysis() {
   load_template("ObliquePath")
   load_template("BasalPath")
 
-  forall insert d3   // mod file to enable 3-D mapping of each point along the cell
+  //forall insert d3   // mod file to enable 3-D mapping of each point along the cell
 
   $o1.defvar("Distance Calculation", "adjustment", "0.0", "This adjustment factor is supplied to the vector distance function so that distance calculations are measured at the cell body.")
 

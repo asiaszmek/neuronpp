@@ -1,20 +1,3 @@
-forall insert d3   // mod file to enable 3-D mapping of each point along the cell
-adjustment = 0.0   //ORIG>> This adjustment factor is supplied to the vector distance function so that distance calculations are measured at the cell body.")
-vRP=new Vector()
-soma{
-		//ORIG>> set point of reference (if adjustment=0). With adjustment factor = 41.1
-		//ORIG>> the point of reference is the soma
-	vRP.append(x3d(0))
-	vRP.append(y3d(0))
-	vRP.append(z3d(0))
-}
-vAPEX=new Vector()
-trunk[17]{
-		// set the apex point
-  vAPEX.append(x3d(0.5))
-  vAPEX.append(y3d(0.5))
-  vAPEX.append(z3d(0.5))
-}
 
 xopen_morphology("soma-list.hoc")
 xopen_morphology("axon-sec-list.hoc")

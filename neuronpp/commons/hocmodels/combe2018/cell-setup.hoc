@@ -38,52 +38,10 @@ Cm_tip       = 1.192      // Apical tip specific capacitance.")
 // SEVERELY affects experiment results
 celsius      = 34 // Temperature of slice.")
         
-//NDB >>>>  $o1.xopen_library("Terrence","cut-sections")
-//          cut_sections(maximum_segment_length)
 maximum_segment_length=75
 forall {
     nseg=1+int(L/maximum_segment_length)
 }
-//<<<< NDB
-
-//ORIG>>// make 3-d mapping of cell sections
-//NDB >>>>    $o1.xopen_library("Terrence","map-segments-to-3d")
-//           map_segments_to_3d()
-forall {
-	insert d3
-	i=0
-	x_d3(0)=x3d(0)
-	y_d3(0)=y3d(0)
-	z_d3(0)=z3d(0)
-
-	for (x) if (x > 0 && x < 1) {
-		while (arc3d(i)/L < x) { i += 1 }
-		D=arc3d(i) - arc3d(i-1)
-		if (D <= 0) {
-			printf("\t\t * %s had a D < 0\n", secname())
-		}
-		alpha = (x*L - arc3d(i-1))/D
-		x_d3(x)=x3d(i-1) + (x3d(i) - x3d(i-1))*alpha
-		y_d3(x)=y3d(i-1) + (y3d(i) - y3d(i-1))*alpha
-		z_d3(x)=z3d(i-1) + (z3d(i) - z3d(i-1))*alpha
-	}
-
-	x_d3(1)=x3d(n3d()-1)
-	y_d3(1)=y3d(n3d()-1)
-	z_d3(1)=z3d(n3d()-1)
-}
-//NDB <<<<
-
-//ORIG>>// prepare to make a graph with cell configuration
-//NDB >>>>    $o1.tmpo2=new Shape()
-
-//remove shape
-//objref tmpo2
-//tmpo2=new Shape()
-
-//NDB <<<<  
-
-
 //ORIG>>// Set initial conductance values 
 soma_caL =0.00006
 soma_car =0.00003
@@ -107,9 +65,6 @@ gkdrnotrunk=2.2*0.015
 AXKdr=1
 AXNa=1
  
-//v_init=-70
-
-//ORIG>>// Start inserting mechanisms in cell
 sectype ="soma"
 forsec "soma" {
 	insert na3
@@ -140,8 +95,6 @@ forsec "soma" {
 		gcalbar_cal = 0.1*soma_caL
 	insert cat // LVA Ca++-T type current
 		gcatbar_cat = soma_caT
-        //insert somacar // HVAm Ca++-R type current
-    	//gcabar_somacar = gsomacar
 	insert car // HVAm Ca++-R type current
 	gcabar_car = gsomacar
 	insert SK_channel   // K(Ca) mAHP potassium type current
@@ -151,10 +104,6 @@ forsec "soma" {
 		gkbar_BK_channel = 5.5*BK_channel_init        
 	insert cad  // calcium pump/buffering mechanism 
 		taur_cad=20
-	//insert cabalan  // calcium pump/buffering mechanism
-
-	// remove shape
-	//tmpo2.color(2)
 }
 
 //ORIG>>  Configure Axon
@@ -180,13 +129,10 @@ forsec axon_sec_list {
 }
     
 //ORIG>>  Configure apical trunk
- 
+
 forsec apical_trunk_list {
 
-	//ORIG>>// apical_h_insert_sig($o1)    // Inserting h-current
-	//NDF>>>	apical_caR_caLH_insert($o1) // Inserting Ca++ R-type and Ca++ L-type currents
 	for (x) {  
-		xdist = find_vector_distance_precise(secname(),x)
 		xdist=distance(x)
 		insert car
 		gcabar_car(x) = 0.1*soma_car
@@ -197,12 +143,9 @@ forsec apical_trunk_list {
 			gcalbar_calH(x) = 0.1*soma_caLH               //0.1*soma_caLH
 		}
 	}
-	//<<<NDF
-	//NDF>>> apical_caT_insert($o1)      // Inserting Ca++ T-type current
 	caT_distal_maxfactor = 4   //ORIG>> maximum cond. factor in dendrites
 	caT_distal_distance  = 350 //ORIG>> distance in dendrites for maximum cond.
 	for (x) {  
-		xdist = find_vector_distance_precise(secname(),x)
 		xdist = distance(x)
 		fr = xdist/caT_distal_distance
 		insert cat  
@@ -212,13 +155,9 @@ forsec apical_trunk_list {
 			gcatbar_cat(x) = caT_distal_maxfactor*soma_caT*fr
 		} 
 	}
-	//<<<NDF
-	//NDF>>> apical_SK_channel_insert($o1)      // Inserting K(Ca) sAHP and mAHP potassium currents
-	SK_channel_distal_maxfactor = 1   //ORIG>> maximum cond. factor in dendrites
-	//ORIG>>// SK_channel_distal_maxfactor = 0 //maximum cond. factor in dendrites
-    SK_channel_distal_distance  = 200 //ORIG>> distance in dendrites for maximum cond.
+	SK_channel_distal_maxfactor = 1 
+	SK_channel_distal_distance  = 200 
 	for (x) {  
-		xdist = find_vector_distance_precise(secname(),x)
 		xdist = distance(x)
 		fr = xdist/SK_channel_distal_distance 
 		insert cad    // calsium pump/buffering mechanism
@@ -229,14 +168,12 @@ forsec apical_trunk_list {
 
 		if (xdist < SK_channel_distal_distance && xdist > 50) {       
 			gbar_SK_channel(x) = 5*soma_SK_channel
-			gkbar_BK_channel = 2*BK_channel_init
+			gkbar_BK_channel(x) = 2*BK_channel_init
 		} else {
 			gbar_SK_channel(x) = 0.5*soma_SK_channel
-			gkbar_BK_channel = 0.5*BK_channel_init
+			gkbar_BK_channel(x) = 0.5*BK_channel_init
 		}
 	}
-	//<<<NDF
-	//ORIG>>// A_insert($o1)               // Inserting A-current
 	insert h
 	insert kap
 	insert kad 
@@ -273,11 +210,6 @@ forsec apical_trunk_list {
 		e_pas          = -70
 	Ra             = Ra_trunk
 	cm             = Cm_trunk
-	//ORIG>>>// Rm_sigmoid($o1)   // configure Rm along apical trunk
-	//ORIG>>>//  Ra_sigmoid($o1)   // configure Ra along apical trunk
-
-	//remove shape
-	//tmpo2.color(4)
 }
  
 
@@ -285,11 +217,10 @@ forsec apical_trunk_list {
  
 sectype = "apical non-trunk"
 forsec apical_non_trunk_list {
-	//ORIG>>//         apical_h_insert_sig($o1)    // Inserting h-current
-	//NDF>>>	apical_caR_caLH_insert($o1) // Inserting Ca++ R-type and Ca++ L-type currents
 	for (x) {  
-		xdist = find_vector_distance_precise(secname(),x)
+		//xdist = find_vector_distance_precise(secname(),x)
 		xdist=distance(x)
+		
 		insert car
 		gcabar_car(x) = 0.1*soma_car
 
@@ -299,13 +230,13 @@ forsec apical_non_trunk_list {
 		} else {
 			gcalbar_calH(x) = 0.1*soma_caLH               //0.1*soma_caLH
 		}
+		
 	}
-	//<<<NDF
-	//NDF>>> apical_caT_insert($o1)      // Inserting Ca++ T-type current
+
 	caT_distal_maxfactor = 4  // ORIG>> maximum cond. factor in dendrites")
 	caT_distal_distance  = 350 // ORIG>> distance in dendrites for maximum cond.")
 	for (x) {  
-		xdist = find_vector_distance_precise(secname(),x)
+		//xdist = find_vector_distance_precise(secname(),x)
 		xdist=distance(x)
 		fr = xdist/caT_distal_distance
 		insert cat  
@@ -315,14 +246,10 @@ forsec apical_non_trunk_list {
 			gcatbar_cat(x) = caT_distal_maxfactor*soma_caT*fr
 		} 
     }
-	//<<<NDF
-	//NDF>>> apical_SK_channel_insert($o1)      // Inserting K(Ca) sAHP and mAHP potassium currents
 	SK_channel_distal_maxfactor = 1 // ORIG>> maximum cond. factor in dendrites")
-	// ORIG>>//SK_channel_distal_maxfactor = 0 // maximum cond. factor in dendrites
 	SK_channel_distal_distance = 200 // ORIG>> distance in dendrites for maximum cond.")
   
 	for (x) {  
-		xdist = find_vector_distance_precise(secname(),x)
 		xdist=distance(x)
 		fr = xdist/SK_channel_distal_distance 
 		insert cad    // calsium pump/buffering mechanism
@@ -333,14 +260,13 @@ forsec apical_non_trunk_list {
 
 		if (xdist < SK_channel_distal_distance && xdist > 50) {       
 			gbar_SK_channel(x) = 5*soma_SK_channel
-			gkbar_BK_channel = 2*BK_channel_init
+			gkbar_BK_channel(x) = 2*BK_channel_init
 		} else {
 			gbar_SK_channel(x) = 0.5*soma_SK_channel
-			gkbar_BK_channel = 0.5*BK_channel_init
+			gkbar_BK_channel(x) = 0.5*BK_channel_init
 		}
+
 	}
-	//<<<NDF
-	//ORIG>>//        A_insert($o1)               // Inserting A-current
 			 
 	insert h
 	insert kap
@@ -379,16 +305,9 @@ forsec apical_non_trunk_list {
 		e_pas     = -70                     
 	Ra        = Ra_non_trunk
 	cm        = Cm_non_trunk
-	//ORIG>>//Rm_sigmoid($o1)   // configure Rm along apical trunk
-	//ORIG>>//Ra_sigmoid($o1)   // configure Ra along apical trunk
 
-	//remove shape
-	//tmpo2.color(3)
 }
 
-//ORIG>>//khoblique_peri_decay($o1)  // Configure the apical oblique dendrites
-
-// Configure the basal dendrites
 
 sectype = "basal tree"
 forsec basal_tree_list {
@@ -401,7 +320,6 @@ forsec basal_tree_list {
 		gkabar_kap = 0.0025036
 	insert h                
 		gbar_h = soma_hbar
-	//ORIG>>//ek = -80 
 	insert kdr
 		gbar_na3dend=gnadend
 		gkdrbar_kdr=gkdrdend
@@ -412,40 +330,13 @@ forsec basal_tree_list {
 		e_pas          = -70
 	Ra             = Ra_basal
 	cm             = Cm_basal
-	//ORIG>>//  Ra_sigmoid($o1) // configure Ra
-
-	//remove shape
-	//tmpo2.color(5)
 }
 
-//ORIG>>//khbasal_fixed($o1) // Configure basal dendrites         
    
 forsec "soma" { g_pas= 1/Rm_soma} // force Rm at all soma sections
 
-//ORIG>>// forall if (ismembrane("kdr") ) {  
-//ORIG>>//           ek         = -77      //-77 
-//ORIG>>//      }
 forall if(ismembrane("ca_ion")) {
 	eca =140
 	ion_style("ca_ion",0,1,0,0,0)
 	vshift_ca = 0
 }
-  
-
-
-
-//ORIG>>// Print a postcript file in the generic directory with the cell configuration
-//NTB>>> sprint(tmp_str2, "%s/configure_sections.eps", $o1.generic_dir)
-//      $o1.tmpo2.printfile($o1.tmp_str2)
-
-//remove shape
-//tmpo2.printfile("experiment/configure_sections.eps")
-//<<<NTB
-
-//NTB>>> econ.xopen_library("Terrence","current-balance") 
-//ORIG>>//current_balance(v_init)
-//<<<NTB
-
-//ORIG>>//Carmen's change previous origin was at 0 end of apical dendrite[65]
-soma distance()
-
