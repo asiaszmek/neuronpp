@@ -17,8 +17,7 @@ UNITS {
 
 NEURON {
 	SUFFIX cat
-	USEION ca READ cai,cao 
-        USEION Ca WRITE iCa VALENCE 2
+	USEION ca WRITE ica
         : The T-current does not activate calcium-dependent currents.
         : The construction with dummy ion Ca prevents the updating of the 
         : internal calcium concentration. 
@@ -47,7 +46,7 @@ STATE {
 }
 
 ASSIGNED {
-      iCa (mA/cm2)
+      ica (mA/cm2)
       gcat (mho/cm2)
 	hinf
 	tauh
@@ -66,7 +65,7 @@ INITIAL {
 BREAKPOINT {
 	SOLVE states METHOD cnexp
 	gcat = gcatbar*m*m*h*h2(cai)
-	iCa = gcat*ghk(v,cai,cao)
+	ica = gcat*ghk(v,cai,cao)
 
 }
 
