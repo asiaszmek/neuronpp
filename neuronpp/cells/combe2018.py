@@ -290,14 +290,13 @@ class Combe2018Cell(Cell):
 
             sec.insert("km")
             sec.gbar_km = params.soma_km
-            sec.ek = params.potK
 
             sec.insert("pas")
             sec.g_pas = 1/params.Rm_trunk
             sec.e_pas = params.e_pas
             sec.Ra = params.Ra_trunk
             sec.cm = params.Cm_trunk
-
+            sec.ek = -77
             for i, seg in enumerate(sec):
                 if i == sec.nseg - 1:
                     xdist = h.distance(sec(1.0))
@@ -384,14 +383,13 @@ class Combe2018Cell(Cell):
 
             sec.insert("km")
             sec.gbar_km = params.soma_km
-            sec.ek = params.potK
 
             sec.insert("pas")
             sec.g_pas = 1/params.Rm_non_trunk
             sec.e_pas = params.e_pas
             sec.Ra = params.Ra_non_trunk
             sec.cm = params.Cm_non_trunk
-
+            sec.ek = -80
             for i, seg in enumerate(sec):
                 if i == sec.nseg - 1:
                     xdist = h.distance(sec(1.0))
@@ -446,6 +444,7 @@ class Combe2018Cell(Cell):
     def add_basal_tree_mechanisms(self):
         for s in self.dend:
             sec = s.hoc
+  
             sec.insert("na3dend")
             sec.insert("nap")
             sec.gnabar_nap = params.soma_nap_gnabar
@@ -455,7 +454,6 @@ class Combe2018Cell(Cell):
             sec.gkabar_kap = params.dend_kap
             sec.insert("h")
             sec.gbar_h = params.soma_hbar
-            sec.ek = params.potK
             sec.insert("kdr")
             sec.gbar_na3dend = params.gnadend
             sec.gkdrbar_kdr = params.gkdrdend
@@ -465,14 +463,15 @@ class Combe2018Cell(Cell):
             sec.e_pas = params.e_pas
             sec.Ra = params.Ra_basal
             sec.cm = params.Cm_basal
-
+            sec.ek = -80
+            
     def add_calcium(self, decay=True):
         if decay:
             ca_sections = [self.soma] + self.trunk + self.apic
             for section in ca_sections:
                 section.hoc.insert("cad")
                 section.hoc.taur_cad = params.taur_cad
-                section.hoc.eca = params.potCa
+                section.hoc.eca = 140#params.potCa
         else:
             print("Unimplemented mechanism")
 
@@ -489,7 +488,6 @@ class Combe2018Cell(Cell):
         for sec in self.secs:
             sec.hoc.nseg = 1 + int(sec.hoc.L/maximum_segment_length)
         h.distance()
-        self.add_calcium()
         self.add_soma_mechanisms()
         self.add_axon_mechanisms()
         self.add_trunk_mechanisms()
@@ -497,5 +495,11 @@ class Combe2018Cell(Cell):
         self.add_basal_tree_mechanisms()
         self.ObliqueTrunkSection = self.trunk[17]
         self.BasalTrunkSection = self.trunk[7]
+
         
         h.celsius = 34
+        self.add_calcium()
+        for sec in self.secs:
+            if h.ismembrane("ca_ion", sec=sec.hoc):
+                sec.hoc.eca = 140
+                h.ion_style("ca_ion",0, 1, 0, 0, 0, sec=sec.hoc)
