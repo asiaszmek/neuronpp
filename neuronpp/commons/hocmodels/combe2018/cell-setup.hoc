@@ -155,11 +155,8 @@ forsec apical_trunk_list {
 			gcatbar_cat(x) = caT_distal_maxfactor*soma_caT*fr
 		} 
 	}
-	//<<<NDF
-	//NDF>>> apical_SK_channel_insert($o1)      // Inserting K(Ca) sAHP and mAHP potassium currents
-	SK_channel_distal_maxfactor = 1   //ORIG>> maximum cond. factor in dendrites
-	//ORIG>>// SK_channel_distal_maxfactor = 0 //maximum cond. factor in dendrites
-    SK_channel_distal_distance  = 200 //ORIG>> distance in dendrites for maximum cond.
+	SK_channel_distal_maxfactor = 1 
+	SK_channel_distal_distance  = 200 
 	for (x) {  
 		xdist = distance(x)
 		fr = xdist/SK_channel_distal_distance 
@@ -171,10 +168,10 @@ forsec apical_trunk_list {
 
 		if (xdist < SK_channel_distal_distance && xdist > 50) {       
 			gbar_SK_channel(x) = 5*soma_SK_channel
-			gkbar_BK_channel = 2*BK_channel_init
+			gkbar_BK_channel(x) = 2*BK_channel_init
 		} else {
 			gbar_SK_channel(x) = 0.5*soma_SK_channel
-			gkbar_BK_channel = 0.5*BK_channel_init
+			gkbar_BK_channel(x) = 0.5*BK_channel_init
 		}
 	}
 	insert h
@@ -249,10 +246,7 @@ forsec apical_non_trunk_list {
 			gcatbar_cat(x) = caT_distal_maxfactor*soma_caT*fr
 		} 
     }
-	//<<<NDF
-	//NDF>>> apical_SK_channel_insert($o1)      // Inserting K(Ca) sAHP and mAHP potassium currents
 	SK_channel_distal_maxfactor = 1 // ORIG>> maximum cond. factor in dendrites")
-	// ORIG>>//SK_channel_distal_maxfactor = 0 // maximum cond. factor in dendrites
 	SK_channel_distal_distance = 200 // ORIG>> distance in dendrites for maximum cond.")
   
 	for (x) {  
@@ -266,10 +260,10 @@ forsec apical_non_trunk_list {
 
 		if (xdist < SK_channel_distal_distance && xdist > 50) {       
 			gbar_SK_channel(x) = 5*soma_SK_channel
-			gkbar_BK_channel = 2*BK_channel_init
+			gkbar_BK_channel(x) = 2*BK_channel_init
 		} else {
 			gbar_SK_channel(x) = 0.5*soma_SK_channel
-			gkbar_BK_channel = 0.5*BK_channel_init
+			gkbar_BK_channel(x) = 0.5*BK_channel_init
 		}
 
 	}
