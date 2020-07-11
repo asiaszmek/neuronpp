@@ -10,6 +10,7 @@ TITLE Ca R-type channel with medium threshold for activation
 NEURON {
 	SUFFIX car
 	USEION ca READ cai, cao WRITE ica
+:	USEION Ca WRITE iCa VALENCE 2
         RANGE gcabar, m, h,ica
 	RANGE inf, fac, tau, ica
 }
@@ -26,6 +27,7 @@ UNITS {
 
 ASSIGNED {               : parameters needed to solve DE
 	ica (mA/cm2)
+:	iCa (mA/cm2)
         inf[2]
 	tau[2]		(ms)
         v               (mV)
@@ -58,8 +60,7 @@ INITIAL {
 BREAKPOINT {
 	SOLVE states METHOD cnexp
 	:ecar = (1e3) * (R*(celsius+273.15))/(2*FARADAY) * log (cao/cai)
-							       
-	ica = gcabar*m*m*m*h*ghk(v, cai, cao)
+	ica = gcabar*m*m*m*h*(v - eca)
 
 }
 
@@ -68,29 +69,6 @@ DERIVATIVE states {
 	rates(v)
 	m' = (inf[0]-m)/tau[0]
 	h' = (inf[1]-h)/tau[1]
-}
-
-
-
-FUNCTION ghk(v(mV), ci(mM), co(mM)) (mV) {
-        LOCAL nu,f
-
-        f = KTF(celsius)/2
-        nu = v/f
-        ghk=-f*(1. - (ci/co)*exp(nu))*efun(nu)
-}
-
-FUNCTION KTF(celsius (DegC)) (mV) {
-        KTF = ((25./293.15)*(celsius + 273.15))
-}
-
-
-FUNCTION efun(z) {
-	if (fabs(z) < 1e-4) {
-		efun = 1 - z/2
-	}else{
-		efun = z/(exp(z) - 1)
-	}
 }
 
 PROCEDURE rates(v(mV)) {LOCAL a, b :rest = -70

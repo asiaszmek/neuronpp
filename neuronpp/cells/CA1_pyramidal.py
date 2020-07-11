@@ -1,26 +1,24 @@
 import os
 from neuron import h
 from neuronpp.cells.cell import Cell
-from neuronpp.cells.morphology_points_short_axon import axon_points
+from neuronpp.cells.morphology_points import axon_points
 from neuronpp.cells.morphology_points import trunk_points
 from neuronpp.cells.morphology_points import points_apic, points_apic_continued
 from neuronpp.cells.morphology_points import points_dend, points_dend_continued
-import neuronpp.cells.CA1_pyramidal_parameters as params
+import neuronpp.cells.combe_parameters as params
 
 
 path = os.path.dirname(os.path.abspath(__file__))
 f_path = os.path.join(path, "..", "commons/mods/CA1_pyramidal")
 maximum_segment_length = 75
 
-def dist_e_pas(x):
-    return -65.2 - 5*x/150
-    
-class CA1PyramidalCell(Cell):
+
+class Combe2018Cell(Cell):
     @staticmethod
     def _distribute_channel(x, mech, mech_param, val):
         mech_obj = getattr(x, mech)
         setattr(mech_obj, mech_param, val)
-        
+
     def make_axon(self):
         # axon
         self.axon.hoc.pt3dclear()
@@ -216,9 +214,7 @@ class CA1PyramidalCell(Cell):
 
         sec.insert("pas")
         sec.g_pas = 1/params.Rm_soma
-
-        dist = h.distance(sec(0.5))
-        sec.e_pas = dist_e_pas(dist)
+        sec.e_pas = params.e_pas
         sec.Ra = params.Ra_soma
         sec.cm = params.Cm_soma
 
@@ -259,7 +255,6 @@ class CA1PyramidalCell(Cell):
         sec.ena = params.potNa
         sec.insert("pas")
         sec.g_pas = 1/params.Rm_axon
-        sec.e_pas = params.axon_e_pas
         sec.Ra = params.Ra_axon
         sec.cm = params.Cm_axon
         sec.insert("km")
@@ -298,11 +293,10 @@ class CA1PyramidalCell(Cell):
 
             sec.insert("pas")
             sec.g_pas = 1/params.Rm_trunk
-            dist = h.distance(sec(0.5))
-            sec.e_pas = dist_e_pas(dist)
+            sec.e_pas = params.e_pas
             sec.Ra = params.Ra_trunk
             sec.cm = params.Cm_trunk
-            sec.ek = params.potK
+            sec.ek = -77
             for i, seg in enumerate(sec):
                 if i == sec.nseg - 1:
                     xdist = h.distance(sec(1.0))
@@ -392,11 +386,10 @@ class CA1PyramidalCell(Cell):
 
             sec.insert("pas")
             sec.g_pas = 1/params.Rm_non_trunk
-            dist = h.distance(sec(0.5))
-            sec.e_pas = dist_e_pas(dist)
+            sec.e_pas = params.e_pas
             sec.Ra = params.Ra_non_trunk
             sec.cm = params.Cm_non_trunk
-            sec.ek = params.potK
+            sec.ek = -80
             for i, seg in enumerate(sec):
                 if i == sec.nseg - 1:
                     xdist = h.distance(sec(1.0))
@@ -467,11 +460,10 @@ class CA1PyramidalCell(Cell):
             sec.ena = params.potNa
             sec.insert("pas")
             sec.g_pas = 1/params.Rm_basal
-            dist = h.distance(sec(0.5))
-            sec.e_pas = dist_e_pas(dist)
+            sec.e_pas = params.e_pas
             sec.Ra = params.Ra_basal
             sec.cm = params.Cm_basal
-            sec.ek = params.potK
+            sec.ek = -80
             
     def add_calcium(self, decay=True):
         if decay:
@@ -511,6 +503,3 @@ class CA1PyramidalCell(Cell):
             if h.ismembrane("ca_ion", sec=sec.hoc):
                 sec.hoc.eca = 140
                 h.ion_style("ca_ion",0, 1, 0, 0, 0, sec=sec.hoc)
-            if h.ismembrane("kdr", sec=sec.hoc):
-                print(sec.hoc.name())
-                sec.hoc.ek = -77

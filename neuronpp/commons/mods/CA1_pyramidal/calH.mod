@@ -5,18 +5,15 @@ TITLE Ca L-type channel with high treshold of activation
 : written by Yiota Poirazi, 1/8/00 poirazi@LNC.usc.edu
 
 NEURON {
-        SUFFIX calH
-	USEION ca READ cai, cao WRITE ica
-	RANGE gcal, gcalbar, m, h, ica
+	SUFFIX calH
+	USEION ca READ eca WRITE ica
+        RANGE gcal,gcalbar, m, h,ica
 	RANGE inf, fac, tau
 }
 
 UNITS {
 	(mA) = (milliamp)
-        (mV) = (millivolt)
-	FARADAY = 96520 (coul)
-	R = 8.3134 (joule/degC)
-	KTOMV = .0853 (mV/degC)
+	(mV) = (millivolt)
 }
 
 
@@ -28,7 +25,6 @@ PARAMETER {          : parameters that can be entered when function is called in
         gcalbar = 0     (mho/cm2) : initialized conductance
         gcal            (mho/cm2) : initialized conductance
 	eca = 140       (mV)      : Ca++ reversal potential
-
         }
 
 STATE {	m h }                     : unknown activation and inactivation parameters to be solved in the DEs  
@@ -36,10 +32,7 @@ STATE {	m h }                     : unknown activation and inactivation paramete
 ASSIGNED {
 	ica (mA/cm2)
       inf[2]
-      tau[2]
-      cai (mM)      : initial internal Ca++ concentration
-      cao (mM)      : initial external Ca++ concentration
-
+	tau[2]
 
         
 }
@@ -54,8 +47,9 @@ INITIAL {
 
 BREAKPOINT {
 	SOLVE state METHOD cnexp
+	ica = gcalbar*m*m*m*h*(v - eca)
 	gcal = gcalbar*m*m*m*h
-	ica = gcal*ghk(v,cai,cao)
+
 }
 
 
@@ -99,22 +93,4 @@ FUNCTION vartau(v, i) {
         }
 }	
 
-FUNCTION efun(z) {
-	if (fabs(z) < 1e-4) {
-		efun = 1 - z/2
-	}else{
-		efun = z/(exp(z) - 1)
-	}
-}
 
-FUNCTION KTF(celsius (DegC)) (mV) {
-        KTF = ((25./293.15)*(celsius + 273.15))
-}
-
-FUNCTION ghk(v(mV), ci(mM), co(mM)) (mV) {
-        LOCAL nu,f
-
-        f = KTF(celsius)/2
-        nu = v/f
-        ghk=-f*(1. - (ci/co)*exp(nu))*efun(nu)
-}
