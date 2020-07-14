@@ -216,7 +216,9 @@ class CA1PyramidalCell(Cell):
 
         sec.insert("pas")
         sec.g_pas = 1/params.Rm_soma
-        sec.e_pas = params.e_pas
+
+        dist = h.distance(sec(0.5))
+        sec.e_pas = dist_e_pas(dist)
         sec.Ra = params.Ra_soma
         sec.cm = params.Cm_soma
 
@@ -257,6 +259,7 @@ class CA1PyramidalCell(Cell):
         sec.ena = params.potNa
         sec.insert("pas")
         sec.g_pas = 1/params.Rm_axon
+        sec.e_pas = params.axon_e_pas
         sec.Ra = params.Ra_axon
         sec.cm = params.Cm_axon
         sec.insert("km")
@@ -295,7 +298,8 @@ class CA1PyramidalCell(Cell):
 
             sec.insert("pas")
             sec.g_pas = 1/params.Rm_trunk
-            sec.e_pas = params.e_pas
+            dist = h.distance(sec(0.5))
+            sec.e_pas = dist_e_pas(dist)
             sec.Ra = params.Ra_trunk
             sec.cm = params.Cm_trunk
             sec.ek = params.potK
@@ -388,7 +392,8 @@ class CA1PyramidalCell(Cell):
 
             sec.insert("pas")
             sec.g_pas = 1/params.Rm_non_trunk
-            sec.e_pas = params.e_pas
+            dist = h.distance(sec(0.5))
+            sec.e_pas = dist_e_pas(dist)
             sec.Ra = params.Ra_non_trunk
             sec.cm = params.Cm_non_trunk
             sec.ek = params.potK
@@ -462,7 +467,8 @@ class CA1PyramidalCell(Cell):
             sec.ena = params.potNa
             sec.insert("pas")
             sec.g_pas = 1/params.Rm_basal
-            sec.e_pas = params.e_pas
+            dist = h.distance(sec(0.5))
+            sec.e_pas = dist_e_pas(dist)
             sec.Ra = params.Ra_basal
             sec.cm = params.Cm_basal
             sec.ek = params.potK
