@@ -1,7 +1,7 @@
 import os
 from neuron import h
 from neuronpp.cells.cell import Cell
-from neuronpp.cells.morphology_points import axon_points
+from neuronpp.cells.morphology_points_short_axon import axon_points
 from neuronpp.cells.morphology_points import trunk_points
 from neuronpp.cells.morphology_points import points_apic, points_apic_continued
 from neuronpp.cells.morphology_points import points_dend, points_dend_continued
@@ -12,12 +12,15 @@ path = os.path.dirname(os.path.abspath(__file__))
 f_path = os.path.join(path, "..", "commons/mods/CA1_pyramidal")
 maximum_segment_length = 75
 
+def dist_e_pas(x):
+    return -65.2 - 5*x/150
+    
 class CA1PyramidalCell(Cell):
     @staticmethod
     def _distribute_channel(x, mech, mech_param, val):
         mech_obj = getattr(x, mech)
         setattr(mech_obj, mech_param, val)
-
+        
     def make_axon(self):
         # axon
         self.axon.hoc.pt3dclear()
