@@ -17,10 +17,7 @@ UNITS {
 
 NEURON {
 	SUFFIX cat
-	USEION ca WRITE ica
-        : The T-current does not activate calcium-dependent currents.
-        : The construction with dummy ion Ca prevents the updating of the 
-        : internal calcium concentration. 
+	USEION ca READ cai,cao WRITE ica
         RANGE gcat, gcatbar, hinf, minf, taum, tauh, iCa
 }
 
@@ -31,9 +28,7 @@ PARAMETER {
 	celsius = 22  (degC)
 	gcatbar = 0   (mho/cm2)  : initialized conductance
 	ki = 0.001    (mM)
-	cai = 5.e-5   (mM)       : initial internal Ca++ concentration
-	cao = 2       (mM)       : initial external Ca++ concentration
-       tfa = 1                  : activation time constant scaling factor
+        tfa = 1                  : activation time constant scaling factor
        : tfi = 0.68 
         tfi = 0.68               : inactivation time constant scaling factor
         eca = 140                : Ca++ reversal potential
@@ -46,12 +41,15 @@ STATE {
 }
 
 ASSIGNED {
-      ica (mA/cm2)
-      gcat (mho/cm2)
-	hinf
-	tauh
-	minf
-	taum
+          ica (mA/cm2)
+	  gcat (mho/cm2)
+	  hinf
+	  tauh
+	  minf
+	  taum
+	  cai (mM)      : initial internal Ca++ concentration
+	  cao (mM)      : initial external Ca++ concentration
+
 }
 
 INITIAL {
