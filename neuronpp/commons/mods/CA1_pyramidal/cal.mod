@@ -4,8 +4,9 @@ TITLE l-calcium channel
 
 UNITS {
 	(mA) = (milliamp)
-	(mV) = (millivolt)
-
+        (mV) = (millivolt)
+	(molar) = (1/liter)
+	(mM) =	(millimolar)	
 	FARADAY = 96520 (coul)
 	R = 8.3134 (joule/degC)
 	KTOMV = .0853 (mV/degC)
@@ -16,8 +17,6 @@ PARAMETER {
 	celsius= 34	(degC)
 	gcalbar=0 (mho/cm2)
 	ki=.001 (mM)
-	cai = 50.e-6 (mM)
-	cao = 2 (mM)
      	tfa = 5
       ggk
       eca = 140	
@@ -40,6 +39,9 @@ ASSIGNED {
         gcal (mho/cm2)
         minf
         taum  (ms)
+        cai (mM)      : initial internal Ca++ concentration
+	cao (mM)      : initial external Ca++ concentration
+
 }
 
 INITIAL {
