@@ -48,37 +48,4 @@ printf("Setting up cell\n")                                         // load cell
 xopen("cell-setup.hoc")                                             // specify all mechanisms, membrane properties etc
 
 
-///////////////////Load File//////////////////////
-
-//if(!back) load_file("SK_channel.ses")
-//not show graphs
-//if(!back) { load_file("print.ses") }
-/*cvode_active(1)*/
-
-//////   Spike counter//////////
-
-objref apc, v1
-
-proc insert_APC() {
-	apc = new APCount(0.5)
-	apc.thresh = $1
-	v1 = new Vector()
-	apc.record(v1)
-}
-
-proc init() {
-	if(restart){
-		f1.ropen("state.old")
-		ss.fread(f1)
-		f1.close
-		finitialize(v_init)
-		ss.restore()
-		t=0
-		fcurrent()
-		cvode.re_init()
-	} else {
-		finitialize(v_init)
-		fcurrent()
-	}
-}
 
