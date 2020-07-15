@@ -35,7 +35,7 @@ class CA1_04(Cell, CoreHocCell):
         Cell.__init__(self, name, model_folder)
         CoreHocCell.__init__(self, name)
 
-        main_file = os.path.join(model_folder, "load_cell_pyr_04.hoc")
+        main_file = os.path.join(model_folder, "load_cell_04_pyr.hoc")
         self.load_hoc(main_file, hoc_template_name="CA1_PC_cAC_sig5")
 
         
@@ -71,7 +71,7 @@ class CA1_08(Cell, CoreHocCell):
         Cell.__init__(self, name, model_folder)
         CoreHocCell.__init__(self, name)
 
-        main_file = os.path.join(model_folder, "load_cell_pyr_08.hoc")
+        main_file = os.path.join(model_folder, "load_cell_08_pyr.hoc")
         self.load_hoc(main_file, hoc_template_name="CA1_PC_cAC_sig6")
 
         
