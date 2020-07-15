@@ -1,0 +1,7 @@
+load_file("nrngui.hoc")
+cvode_active(1) 
+celsius=34
+objref cell
+tstop=1200
+load_file("cell_seed3_0-pyr-08.hoc")
+cell = new CA1_PC_cAC_sig6()
