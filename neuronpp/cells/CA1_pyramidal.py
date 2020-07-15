@@ -20,7 +20,54 @@ class CA1PyramidalCell(Cell):
     def _distribute_channel(x, mech, mech_param, val):
         mech_obj = getattr(x, mech)
         setattr(mech_obj, mech_param, val)
+
+    def _shorten_axon(self):
+        L_target = 60
+        nseg0 = 5
+        nseg_total = 2*nseg0
+        chunkSize = L_target/nseg_total
+        nSec = len(self.axon)
+        if not nSec:
+            raise "No axon"
+        i1 = self.axon[0].v(0.5)
+        try:
+            i2 = self.axon[1].v(0.5)
+        except IndexError:
+            i2 = i1
+        count = 0
+        diams = []
+        for sec in self.axon:
+            nseg = 1 + int(L/chunkSize/2)*2
+            for seg in sec:
+                count += 1
+                diams.append(sec.diam(seg))
+                if count == nseg_total:
+                    break
+            if count == nseg_total:
+                break
+        # delete old axon
+        for sec in self.axon:
+            self.axon.remove(sec)
+            h.delete_section(sec)
         
+        axon_0 = self.add_sec("axon_0")
+        axon_2 = self.add_sec("axon_1")
+        self.connect_secs(axon_0, self.soma[0])
+        self.connect_secs(axon_1, axon_0)
+        self.axon.append(axon_0.hoc)
+        self.axon.append(axon_1.hoc)
+        count = 0
+        for i, axon in enumerate(self.axon):
+            axon.L = L_target/2
+            axon.nseg = nseg_total/2
+            for seg in axon:
+                axon.diam(seg) = diams[count]
+                count += 1
+            if i == 0:
+                sec.v(0.0001) = i1
+            else:
+                sec.v(0.0001) = i2
+
     def make_axon(self):
         # axon
         self.axon.hoc.pt3dclear()
@@ -492,6 +539,7 @@ class CA1PyramidalCell(Cell):
         """
         Cell.__init__(self, name=name, compile_paths=compile_paths)
         self.make_morphology()
+        self._shorten_axon()
         # adjust segment_number
         for sec in self.secs:
             sec.hoc.nseg = 1 + int(sec.hoc.L/maximum_segment_length)
