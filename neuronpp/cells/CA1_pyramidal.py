@@ -248,76 +248,75 @@ class CA1PyramidalCell(Cell):
         self.make_dend()
 
     def add_soma_mechanisms(self):
-        sec = self.soma.hoc
-        sec.insert("na3")
-        sec.gbar_na3 = params.gna
-        sec.insert("kdr")
-        sec.gkdrbar_kdr = params.gkdr
 
-        sec.ena = params.potNa
+        for sec in self.soma:
+            sec.insert("na3")
+            sec.gbar_na3 = params.gna
+            sec.insert("kdr")
+            sec.gkdrbar_kdr = params.gkdr
+            sec.ena = params.potNa
+        
+            sec.insert("nap")
+            sec.gnabar_nap = params.soma_nap_gnabar
+            sec.K_nap = params.soma_K_nap
+            sec.vhalf_nap = params.soma_vhalf_nap
+            
+            sec.insert("pas")
+            sec.g_pas = 1/params.Rm_soma
 
-        sec.insert("nap")
-        sec.gnabar_nap = params.soma_nap_gnabar
-        sec.K_nap = params.soma_K_nap
-        sec.vhalf_nap = params.soma_vhalf_nap
+            dist = h.distance(sec(0.5))
+            sec.e_pas = dist_e_pas(dist)
+            sec.Ra = params.Ra_soma
+            sec.cm = params.Cm_soma
 
-        sec.insert("pas")
-        sec.g_pas = 1/params.Rm_soma
+            sec.insert("h")
+            sec.gbar_h = params.soma_hbar
+            sec.K_h = params.soma_K_h
+            sec.vhalf_h = params.soma_vhalf_h
+            
+            sec.insert("kap")
+            sec.gkabar_kap = params.soma_kap
+            
+            sec.insert("km")
+            sec.gbar_km = params.soma_km
+            sec.ek = params.potK
 
-        dist = h.distance(sec(0.5))
-        sec.e_pas = dist_e_pas(dist)
-        sec.Ra = params.Ra_soma
-        sec.cm = params.Cm_soma
-
-        sec.insert("h")
-        sec.gbar_h = params.soma_hbar
-        sec.K_h = params.soma_K_h
-        sec.vhalf_h = params.soma_vhalf_h
-
-        sec.insert("kap")
-        sec.gkabar_kap = params.soma_kap
-
-        sec.insert("km")
-        sec.gbar_km = params.soma_km
-        sec.ek = params.potK
-
-        sec.insert("cal")
-        sec.gcalbar_cal = params.soma_caL/10
-
-        sec.insert("cat")
-        sec.gcatbar_cat = params.soma_caT
-
-        sec.insert("car")
-        sec.gcabar_car = params.gsomacar
-
-        sec.insert("SK_channel")
-        sec.cac_SK_channel = params.cac_SK_channel
-        sec.gbar_SK_channel = params.gbar_SK_channel
-
-        sec.insert("BK_channel")  # K(Ca) fAHP potassium type current
-        sec.gkbar_BK_channel = params.gkbar_BK_channel
+            sec.insert("cal")
+            sec.gcalbar_cal = params.soma_caL/10
+            
+            sec.insert("cat")
+            sec.gcatbar_cat = params.soma_caT
+        
+            sec.insert("car")
+            sec.gcabar_car = params.gsomacar
+            
+            sec.insert("SK_channel")
+            sec.cac_SK_channel = params.cac_SK_channel
+            sec.gbar_SK_channel = params.gbar_SK_channel
+            
+            sec.insert("BK_channel")  # K(Ca) fAHP potassium type current
+            sec.gkbar_BK_channel = params.gkbar_BK_channel
 
     def add_axon_mechanisms(self):
-        sec = self.axon.hoc
-        sec.insert("nax")
-        sec.gbar_nax = params.gna*params.AXNa
-        sec.insert("kdr")
-        sec.gkdrbar_kdr = params.gkdr*params.AXKdr
-        sec.ena = params.potNa
-        sec.insert("pas")
-        sec.g_pas = 1/params.Rm_axon
-        sec.e_pas = params.axon_e_pas
-        sec.Ra = params.Ra_axon
-        sec.cm = params.Cm_axon
-        sec.insert("km")
-        sec.gbar_km = 3*params.soma_km
-        sec.insert("kap")
-        sec.gkabar_kap = params.soma_kap
-        sec.ek = params.potK
+        for sec in self.axon:
+            sec.insert("nax")
+            sec.gbar_nax = params.gna*params.AXNa
+            sec.insert("kdr")
+            sec.gkdrbar_kdr = params.gkdr*params.AXKdr
+            sec.ena = params.potNa
+            sec.insert("pas")
+            sec.g_pas = 1/params.Rm_axon
+            sec.e_pas = params.axon_e_pas
+            sec.Ra = params.Ra_axon
+            sec.cm = params.Cm_axon
+            sec.insert("km")
+            sec.gbar_km = 3*params.soma_km
+            sec.insert("kap")
+            sec.gkabar_kap = params.soma_kap
+            sec.ek = params.potK
 
     def add_trunk_mechanisms(self):
-        for s in self.trunk:
-            sec = s.hoc
+        for sec in self.trunk:
             sec.insert("car")
             sec.gcabar_car = 0.1*params.soma_car
             sec.insert("cat")
@@ -407,8 +406,9 @@ class CA1PyramidalCell(Cell):
                                              params.soma_kap*(1 + xdist/100))
 
     def add_apical_mechanisms(self):
-        for s in self.apic:
-            sec = s.hoc
+        
+        for sec in self.apic:
+            #sec = s.hoc
             sec.insert("car")
             sec.insert("calH")
             sec.gcabar_car = 0.1*params.soma_car
@@ -496,9 +496,7 @@ class CA1PyramidalCell(Cell):
                 self._distribute_channel(seg, "kap", "gkabar", new_kap)
 
     def add_basal_tree_mechanisms(self):
-        for s in self.dend:
-            sec = s.hoc
-  
+        for sec in self.dend:
             sec.insert("na3dend")
             sec.insert("nap")
             sec.gnabar_nap = params.soma_nap_gnabar
@@ -522,11 +520,11 @@ class CA1PyramidalCell(Cell):
             
     def add_calcium(self, decay=True):
         if decay:
-            ca_sections = [self.soma] + self.trunk + self.apic
+            ca_sections = self.soma  + self.apic
             for section in ca_sections:
-                section.hoc.insert("cad")
-                section.hoc.taur_cad = params.taur_cad
-                section.hoc.eca = 140#params.potCa
+                section.insert("cad")
+                section.taur_cad = params.taur_cad
+                section.eca = 140#params.potCa
         else:
             print("Unimplemented mechanism")
 
@@ -538,19 +536,20 @@ class CA1PyramidalCell(Cell):
             Folder with channels
         """
         Cell.__init__(self, name=name, compile_paths=compile_paths)
-        self.make_morphology()
-        self._shorten_axon()
+        #self.make_morphology()
         # adjust segment_number
+        morpho_path = os.path.join(path, "..", "commons", "morphologies",
+                                   "asc", "mpg141208_B_idA.asc")
+        self.load_morpho(filepath=morpho_path)
+        print(self.soma)
         for sec in self.secs:
             sec.hoc.nseg = 1 + int(sec.hoc.L/maximum_segment_length)
         h.distance()
         self.add_soma_mechanisms()
         self.add_axon_mechanisms()
-        self.add_trunk_mechanisms()
+        #self.add_trunk_mechanisms()
         self.add_apical_mechanisms()
         self.add_basal_tree_mechanisms()
-        self.ObliqueTrunkSection = self.trunk[17]
-        self.BasalTrunkSection = self.trunk[7]
 
         
         h.celsius = 34
@@ -562,3 +561,4 @@ class CA1PyramidalCell(Cell):
             if h.ismembrane("kdr", sec=sec.hoc):
                 print(sec.hoc.name())
                 sec.hoc.ek = -77
+            print(sec.hoc.name(), sec.hoc.psection()["density_mechs"]["pas"], sec.hoc.cm, sec.hoc.Ra)
