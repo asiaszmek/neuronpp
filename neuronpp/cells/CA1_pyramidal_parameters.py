@@ -12,10 +12,10 @@ Ra_axon = 74  # Axonal specific axial resistance
 
 Cm_default = 1      # Default specific capacitance
 Cm_axon = Cm_default  # Axonal specific capacitance
-Cm_soma = 1.5     # Somatic specific capacitance
-Cm_trunk = 1.5     # Trunk specific capacitance
-Cm_non_trunk = 1.5     # Oblique specific capacitance
-Cm_basal = 1.144    # Basal specific capacitance
+Cm_soma = 1     # Somatic specific capacitance
+Cm_trunk = 1     # Trunk specific capacitance
+Cm_non_trunk = 1     # Oblique specific capacitance
+Cm_basal = 1    # Basal specific capacitance
 
 soma_caL = .00006
 soma_car = 0.00003
