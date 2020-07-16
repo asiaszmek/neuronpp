@@ -473,8 +473,8 @@ class TestFindingSectionsWithMechs(unittest.TestCase):
                 cls.cell.connect_secs(dend, cls.dends[i - 1])
         cls.cell.insert("calH", "dend", gcalbar=0.0002)
         cls.cell.insert("SK_channel", "dend", gbar=0.00075)
-        regions = cls.cell.filter_secs("dend", as_list=True)
-        cls.cell.add_spines_by_density(regions, 0.02, "thin", add_pas=True)
+        cls.regions = cls.cell.filter_secs("dend", as_list=True)
+        cls.cell.add_spines_by_density(cls.regions, 0.02, "thin", add_pas=True)
         cls.cell.insert("calH", "head", gcalbar=0.0001)
 
         cls.find_calH = cls.cell.get_spines_by_section("calH")
@@ -488,10 +488,10 @@ class TestFindingSectionsWithMechs(unittest.TestCase):
                 i.remove_immediate_from_neuron()
         del cls.find_calH
 
-        for d in cls.find_kca.values():
+        for d in cls.find_SK_channel.values():
             for i in d:
                 i.remove_immediate_from_neuron()
-        del cls.find_kca
+        del cls.find_SK_channel
 
         for d in cls.find_all.values():
             for i in d:
@@ -610,8 +610,8 @@ class TestCompensateForMechanism(unittest.TestCase):
         cls.gSK_channel = 0.00075
         cls.cell.insert("calH", "dend", gcalbar=cls.gbar_dend)
         cls.cell.insert("SK_channel", "dend", gbar=cls.gSK_channel)
-        regions = cls.cell.filter_secs("dend", as_list=True)
-        cls.cell.add_spines_by_density(regions, 0.02, "thin",
+        cls.regions = cls.cell.filter_secs("dend", as_list=True)
+        cls.cell.add_spines_by_density(cls.regions, 0.02, "thin",
                                        add_pas=True, spine_cm=10)
         cls.cell.insert("calH", "head", gcalbar=cls.gbar_spine)
         cls.cell.compensate(cm_adjustment=False, calH="gcalbar")
