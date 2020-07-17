@@ -1,6 +1,7 @@
 import os
 from neuron import h
 from neuronpp.cells.cell import Cell
+from neuronpp.core.hocwrappers.sec import Sec
 from neuronpp.cells.morphology_points_short_axon import axon_points
 from neuronpp.cells.morphology_points import trunk_points
 from neuronpp.cells.morphology_points import points_apic, points_apic_continued
@@ -29,44 +30,37 @@ class CA1PyramidalCell(Cell):
         nSec = len(self.axon)
         if not nSec:
             raise "No axon"
-        i1 = self.axon[0].v(0.5)
+        i1 = self.axon[0].v
         try:
-            i2 = self.axon[1].v(0.5)
+            i2 = self.axon[1].v
         except IndexError:
             i2 = i1
         count = 0
-        diams = []
-        for sec in self.axon:
-            nseg = 1 + int(L/chunkSize/2)*2
-            for seg in sec:
-                count += 1
-                diams.append(sec.diam(seg))
-                if count == nseg_total:
-                    break
-            if count == nseg_total:
-                break
+        diams = self.axon[0].diam
         # delete old axon
-        for sec in self.axon:
-            self.axon.remove(sec)
-            h.delete_section(sec)
+        axon = self.filter_secs("axon")
+        for ax in axon:
+            ax.remove_immediate_from_neuron()
+        del self.axon
+        self.axon = []
         
         axon_0 = self.add_sec("axon_0")
-        axon_2 = self.add_sec("axon_1")
-        self.connect_secs(axon_0, self.soma[0])
+        axon_1 = self.add_sec("axon_1")
+        soma = self.filter_secs("soma")
+        self.connect_secs(axon_0, soma)
         self.connect_secs(axon_1, axon_0)
         self.axon.append(axon_0.hoc)
         self.axon.append(axon_1.hoc)
-        count = 0
         for i, axon in enumerate(self.axon):
+            print(axon)
             axon.L = L_target/2
-            axon.nseg = nseg_total/2
-            for seg in axon:
-                axon.diam(seg) = diams[count]
-                count += 1
+            axon.nseg = int(nseg_total/2)
+            axon.diam = diams
             if i == 0:
-                sec.v(0.0001) = i1
+                axon.v = i1
             else:
-                sec.v(0.0001) = i2
+                axon.v = i2
+        print(self.axon)
 
     def make_axon(self):
         # axon
@@ -541,6 +535,7 @@ class CA1PyramidalCell(Cell):
         morpho_path = os.path.join(path, "..", "commons", "morphologies",
                                    "asc", "mpg141208_B_idA.asc")
         self.load_morpho(filepath=morpho_path)
+        self._shorten_axon()
         print(self.soma)
         for sec in self.secs:
             sec.hoc.nseg = 1 + int(sec.hoc.L/maximum_segment_length)
