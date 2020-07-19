@@ -493,13 +493,8 @@ class CA1PyramidalCell(Cell):
         self.add_pas()
         self.add_sodium_channels()
         self.add_potassium_channels()
-        # self.add_soma_mechanisms()
-        # self.add_axon_mechanisms()
-        # self.add_trunk_mechanisms()
-        # self.add_apical_mechanisms()
-        # h.celsius = 34
-        # self.add_calcium()
-        # for sec in self.secs:
-        #     if h.ismembrane("ca_ion", sec=sec.hoc):
-        #         sec.hoc.eca = 140
-        #         h.ion_style("ca_ion",0, 1, 0, 0, 0, sec=sec.hoc)
+        self.add_soma_mechanisms()
+        self.add_trunk_mechanisms()
+        self.add_apical_mechanisms()
+        h.celsius = 34
+        self.add_calcium()
