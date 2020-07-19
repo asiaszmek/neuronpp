@@ -1,4 +1,5 @@
 import os
+from numpy import exp
 from neuron import h
 from neuronpp.cells.cell import Cell
 from neuronpp.cells.morphology_points_short_axon import axon_points
@@ -13,22 +14,28 @@ f_path = os.path.join(path, "..", "commons/mods/CA1_pyramidal")
 maximum_segment_length = 75
 
 def dist_e_pas(x):
-    return -65.2 - 5*x/150
+    return -65.168 - 5*x/150
+
+def dist_kad(x):
+    return 15./(1. + exp((300-x)/50))*0.011237
+
+def dist_hd(x):
+    return (1. + 3./100. * x)*1.9199e-05
 
 
 class CA1PyramidalCell(Cell):
-    @staticmethod
-    def _distribute_channel(x, mech, mech_param, val):
+    def distribute_channel(self, x, mech, mech_param, val):
         mech_obj = getattr(x, mech)
         setattr(mech_obj, mech_param, val)
 
     def add_pas(self):
+        soma = self.filter_secs("soma", as_list=True)[0].hoc
         for section in self.secs:
             sec = section.hoc
+            dist = h.distance(sec(0.5)) - h.distance(soma(0.5))
             if "soma" in sec.name():
                 sec.insert("pas")
                 sec.g_pas = 1/params.Rm_soma
-                dist = h.distance(sec(0.5))
                 sec.e_pas = dist_e_pas(dist)
                 sec.Ra = params.Ra_soma
                 sec.cm = params.Cm_soma
@@ -43,25 +50,79 @@ class CA1PyramidalCell(Cell):
             if "trunk" in sec.name():
                 sec.insert("pas")
                 sec.g_pas = 1/params.Rm_trunk
-                dist = h.distance(sec(0.5))
                 sec.e_pas = dist_e_pas(dist)
                 sec.Ra = params.Ra_trunk
                 sec.cm = params.Cm_trunk
             if "apic" in sec.name():
                 sec.insert("pas")
                 sec.g_pas = 1/params.Rm_non_trunk
-                dist = h.distance(sec(0.5))
                 sec.e_pas = dist_e_pas(dist)
                 sec.Ra = params.Ra_non_trunk
                 sec.cm = params.Cm_non_trunk
             if "dend" in sec.name():
                 sec.insert("pas")
                 sec.g_pas = 1/params.Rm_basal
-                dist = h.distance(sec(0.5))
                 sec.e_pas = dist_e_pas(dist)
                 sec.Ra = params.Ra_basal
                 sec.cm = params.Cm_basal
 
+    def add_sodium_channels(self):
+        for sec in self.secs:
+            sec.hoc.insert("nax")
+            sec.hoc.ena = params.potNa
+            if "axon" in sec.hoc.name():
+                sec.hoc.gbar_nax =  params.axon_nax
+            elif "apic" in sec.hoc.name() or "trunk" in sec.hoc.name():
+                sec.hoc.gbar_nax = params.nax
+            elif "dend" in sec.hoc.name():
+                sec.hoc.gbar_nax = params.nax
+            elif "soma" in sec.hoc.name():
+                sec.hoc.gbar_nax = params.nax
+
+    def add_potassium_channels(self):
+        soma = self.filter_secs("soma", as_list=True)[0].hoc
+
+        for sec in self.secs:
+            sec.hoc.insert("kdr")
+            xdist = h.distance(sec.hoc(0.5))
+            if "axon" in sec.hoc.name():
+                sec.hoc.insert("kmb")
+                sec.hoc.insert("kap")
+                sec.hoc.ek = params.potK
+                sec.hoc.gbar_kmb = params.axon_km
+                sec.hoc.gkabar_kap = params.axon_kap
+                sec.hoc.gkdrbar_kdr = params.axon_kdr
+            elif "apic" in sec.hoc.name() or "trunk" in sec.hoc.name():
+                sec.hoc.insert("hd")
+                sec.hoc.insert("kad")
+                sec.hoc.ek = params.potK
+                sec.hoc.gkdrbar_kdr = params.apic_kdr
+            elif "dend" in sec.hoc.name():
+                sec.hoc.insert("kad")
+                sec.hoc.insert("hd")
+                sec.hoc.ek = params.potK
+                sec.hoc.gkdrbar_kdr = params.dend_kdr
+
+            elif "soma" in sec.hoc.name():
+                sec.hoc.insert("kmb")
+                sec.hoc.insert("kap")
+                sec.hoc.insert("hd")
+                sec.hoc.ek = params.potK
+                sec.hoc.gkabar_kap = params.soma_kap
+                sec.hoc.gbar_kmb = params.soma_km
+                sec.hoc.gkdrbar_kdr = params.soma_kdr
+
+            if "kad" in sec.hoc.psection()["density_mechs"]:
+                for seg in sec.hoc:
+                    xdist = h.distance(seg) - h.distance(soma(0.5))
+                    val = dist_kad(xdist)
+                    self.distribute_channel(seg, "kad", "gkabar", val)
+
+            if "hd" in sec.hoc.psection()["density_mechs"]:
+                for seg in sec.hoc:
+                    xdist = h.distance(seg) - h.distance(soma(0.5))
+                    val = dist_hd(xdist)
+                    self.distribute_channel(seg, "hd", "ghdbar", val)
 
     def _shorten_axon(self):
         L_target = 60
@@ -283,26 +344,12 @@ class CA1PyramidalCell(Cell):
             sec = s.hoc
             sec.insert("na3")
             sec.gbar_na3 = params.gna
-            sec.insert("kdr")
-            sec.gkdrbar_kdr = params.gkdr
             sec.ena = params.potNa
         
             sec.insert("nap")
             sec.gnabar_nap = params.soma_nap_gnabar
             sec.K_nap = params.soma_K_nap
             sec.vhalf_nap = params.soma_vhalf_nap
-
-            sec.insert("h")
-            sec.gbar_h = params.soma_hbar
-            sec.K_h = params.soma_K_h
-            sec.vhalf_h = params.soma_vhalf_h
-            
-            sec.insert("kap")
-            sec.gkabar_kap = params.soma_kap
-            
-            sec.insert("km")
-            sec.gbar_km = params.soma_km
-            sec.ek = params.potK
 
             sec.insert("cal")
             sec.gcalbar_cal = params.soma_caL/10
@@ -320,20 +367,6 @@ class CA1PyramidalCell(Cell):
             sec.insert("BK_channel")  # K(Ca) fAHP potassium type current
             sec.gkbar_BK_channel = params.gkbar_BK_channel
 
-    def add_axon_mechanisms(self):
-        axon = self.filter_secs("axon", as_list=True)
-        for s in axon:
-            sec = s.hoc
-            sec.insert("nax")
-            sec.gbar_nax = params.gna*params.AXNa
-            sec.insert("kdr")
-            sec.gkdrbar_kdr = params.gkdr*params.AXKdr
-            sec.ena = params.potNa
-            sec.insert("km")
-            sec.gbar_km = 3*params.soma_km
-            sec.insert("kap")
-            sec.gkabar_kap = params.soma_kap
-            sec.ek = params.potK
 
     def add_trunk_mechanisms(self):
         trunk = self.filter_secs("trunk")
@@ -346,9 +379,6 @@ class CA1PyramidalCell(Cell):
             sec.cac_SK_channel = params.cac_SK_channel
             sec.insert("calH")
             sec.insert("BK_channel")
-            sec.insert("h")
-            sec.insert("kap")
-            sec.insert("kad")
             sec.insert("na3")
             sec.gbar_na3 = params.gnadend
 
@@ -357,14 +387,6 @@ class CA1PyramidalCell(Cell):
             sec.K_nap = params.soma_K_nap
             sec.vhalf_nap = params.soma_vhalf_nap
 
-            sec.insert("kdr")
-            sec.gkdrbar_kdr = params.gkdr
-            sec.ena = params.potNa
-
-            sec.insert("km")
-            sec.gbar_km = params.soma_km
-
-            sec.ek = params.potK
             for i, seg in enumerate(sec):
                 if i == sec.nseg - 1:
                     xdist = h.distance(sec(1.0))
@@ -374,52 +396,29 @@ class CA1PyramidalCell(Cell):
                 fr = xdist/params.caT_distal_distance
 
                 if xdist > 50:
-                    self._distribute_channel(seg, "calH", "gcalbar",
+                    self.distribute_channel(seg, "calH", "gcalbar",
                                              2*params.soma_calH)
                 else:
-                    self._distribute_channel(seg, "calH", "gcalbar",
+                    self.distribute_channel(seg, "calH", "gcalbar",
                                              0.1*params.soma_calH)
 
                 if xdist < 100:
-                    self._distribute_channel(seg, "cat", "gcatbar", 0)
+                    self.distribute_channel(seg, "cat", "gcatbar", 0)
                 else:
                     val = params.caT_distal_maxfactor*params.soma_caT*fr
-                    self._distribute_channel(seg, "cat", "gcatbar", val)
+                    self.distribute_channel(seg, "cat", "gcatbar", val)
 
                 if xdist < params.SK_channel_distal_distance and xdist > 50:
-                    self._distribute_channel(seg, "SK_channel", "gbar",
+                    self.distribute_channel(seg, "SK_channel", "gbar",
                                              5*params.soma_SK_channel)
-                    self._distribute_channel(seg, "BK_channel", "gkbar",
+                    self.distribute_channel(seg, "BK_channel", "gkbar",
                                              2*params.BK_channel_init)
 
                 else:
-                    self._distribute_channel(seg, "SK_channel", "gbar",
+                    self.distribute_channel(seg, "SK_channel", "gbar",
                                              0.5*params.soma_SK_channel)
-                    self._distribute_channel(seg, "BK_channel", "gkbar",
+                    self.distribute_channel(seg, "BK_channel", "gkbar",
                                              0.5*params.BK_channel_init)
-
-
-                if xdist > 500:
-                    xdist = 500
-                val = params.soma_hbar*(1 + 3*xdist/100)
-                self._distribute_channel(seg, "h", "gbar", val)
-
-                if xdist > 100:
-                    if xdist > 300:
-                        new_dist = 300
-                    else:
-                        new_dist = xdist
-
-                    self._distribute_channel(seg, "h", "vhalf",
-                                             -81 - 8*(new_dist - 100)/200)
-                    self._distribute_channel(seg, "kad", "gkabar",
-                                             params.soma_kad*(1 + xdist/100))
-                    self._distribute_channel(seg, "kap", "gkabar", 0)
-                else:
-                    self._distribute_channel(seg, "h", "vhalf", -81)
-                    self._distribute_channel(seg, "kad", "gkabar", 0)
-                    self._distribute_channel(seg, "kap", "gkabar",
-                                             params.soma_kap*(1 + xdist/100))
 
     def add_apical_mechanisms(self):
         apic = self.filter_secs("apic", as_list=True)
@@ -434,9 +433,6 @@ class CA1PyramidalCell(Cell):
             sec.cac_SK_channel = params.cac_SK_channel
 
             sec.insert("BK_channel")
-            sec.insert("h")
-            sec.insert("kap")
-            sec.insert("kad")
 
             sec.insert("na3")
             sec.gbar_na3 = params.gnadend
@@ -444,14 +440,6 @@ class CA1PyramidalCell(Cell):
             sec.gnabar_nap = params.soma_nap_gnabar
             sec.K_nap = params.soma_K_nap
             sec.vhalf_nap = params.soma_vhalf_nap
-
-            sec.insert("kdr")
-            sec.gkdrbar_kdr = params.gkdr
-            
-            sec.ena = params.potNa
-
-            sec.insert("km")
-            sec.gbar_km = params.soma_km
 
             sec.ek = params.potK
             for i, seg in enumerate(sec):
@@ -464,8 +452,6 @@ class CA1PyramidalCell(Cell):
                     new_calH = 2*params.soma_calH
                 else:
                     new_calH = 0.1*params.soma_calH
-
-
                 if xdist < 100:
                     new_caT = 0
                 else:
@@ -477,33 +463,13 @@ class CA1PyramidalCell(Cell):
                 else:
                     new_SK = 0.5*params.soma_SK_channel
                     new_BK = 0.5*params.BK_channel_init
-                if xdist > 500:
-                    xdist = 500
-                new_h = params.soma_hbar*(1 + 3*xdist/100)
-                if xdist < 100:
-                    h_vhalf = -81
-                    new_kad = 0
-                    new_kap = params.soma_kap*(1 + xdist/100)
-                else:
-                    if xdist > 300:
-                        new_dist = 300
-                    else:
-                        new_dist = xdist
-                    h_vhalf = -81 - 8*(new_dist - 100)/200
-                    new_kad = params.soma_kad*(1 + xdist/100)
-                    new_kap = 0
-
-                self._distribute_channel(seg, "calH", "gcalbar",
+                self.distribute_channel(seg, "calH", "gcalbar",
                                          new_calH)
-                self._distribute_channel(seg, "cat", "gcatbar", new_caT)
-                self._distribute_channel(seg, "SK_channel", "gbar",
+                self.distribute_channel(seg, "cat", "gcatbar", new_caT)
+                self.distribute_channel(seg, "SK_channel", "gbar",
                                          new_SK)
-                self._distribute_channel(seg, "BK_channel", "gkbar",
+                self.distribute_channel(seg, "BK_channel", "gkbar",
                                          new_BK)
-                self._distribute_channel(seg, "h", "gbar", new_h)
-                self._distribute_channel(seg, "h", "vhalf", h_vhalf)
-                self._distribute_channel(seg, "kad", "gkabar", new_kad)
-                self._distribute_channel(seg, "kap", "gkabar", new_kap)
 
     def add_basal_tree_mechanisms(self):
         dend = self.filter_secs("dend")
@@ -514,15 +480,6 @@ class CA1PyramidalCell(Cell):
             sec.gnabar_nap = params.soma_nap_gnabar
             sec.K_nap = params.soma_K_nap
             sec.vhalf_nap = params.soma_vhalf_nap
-            sec.insert("kap")
-            sec.gkabar_kap = params.dend_kap
-            sec.insert("h")
-            sec.gbar_h = params.soma_hbar
-            sec.insert("kdr")
-            sec.gbar_na3dend = params.gnadend
-            sec.gkdrbar_kdr = params.gkdrdend
-            sec.ena = params.potNa
-            sec.ek = params.potK
             
     def add_calcium(self, decay=True):
         if decay:
@@ -549,22 +506,24 @@ class CA1PyramidalCell(Cell):
                                        "asc", "mpg141208_B_idA.asc")
             self.load_morpho(filepath=morpho_path)
             self._shorten_axon()
+            for sec in self.secs:
+                sec.hoc.nseg = 1 + int(sec.hoc.L/30)
         else:
             self.make_morphology()
             for sec in self.secs:
                 sec.hoc.nseg = 1 + int(sec.hoc.L/maximum_segment_length)
         h.distance()
         self.add_pas()
-        self.add_soma_mechanisms()
-        self.add_axon_mechanisms()
-        self.add_trunk_mechanisms()
-        self.add_apical_mechanisms()
-        self.add_basal_tree_mechanisms()
-        h.celsius = 34
-        self.add_calcium()
-        for sec in self.secs:
-            if h.ismembrane("ca_ion", sec=sec.hoc):
-                sec.hoc.eca = 140
-                h.ion_style("ca_ion",0, 1, 0, 0, 0, sec=sec.hoc)
-            if h.ismembrane("kdr", sec=sec.hoc):
-                sec.hoc.ek = -77
+        self.add_sodium_channels()
+        self.add_potassium_channels()
+        # self.add_soma_mechanisms()
+        # self.add_axon_mechanisms()
+        # self.add_trunk_mechanisms()
+        # self.add_apical_mechanisms()
+        # self.add_basal_tree_mechanisms()
+        # h.celsius = 34
+        # self.add_calcium()
+        # for sec in self.secs:
+        #     if h.ismembrane("ca_ion", sec=sec.hoc):
+        #         sec.hoc.eca = 140
+        #         h.ion_style("ca_ion",0, 1, 0, 0, 0, sec=sec.hoc)
