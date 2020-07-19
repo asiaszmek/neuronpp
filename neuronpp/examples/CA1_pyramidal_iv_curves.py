@@ -12,7 +12,7 @@ cell = CA1PyramidalCell(name="cell1")
 soma = cell.filter_secs("soma")
 
 fig, ax = plt.subplots(1, 1)
-injections = [-.8, -.6, -.2, 0]# .200, .400]
+injections = [-.8, -.6, -.2, 0, .200, .400]
 neuron.h.celsius = 34
 
 for inj in injections:
