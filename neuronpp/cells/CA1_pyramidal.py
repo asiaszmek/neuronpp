@@ -68,7 +68,6 @@ class CA1PyramidalCell(Cell):
         L_target = 60
         nseg0 = 5
         nseg_total = 2*nseg0
-        chunkSize = L_target/nseg_total
         nSec = len(self.axon)
         if not nSec:
             raise "No axon"
@@ -94,7 +93,6 @@ class CA1PyramidalCell(Cell):
         self.axon.append(axon_0.hoc)
         self.axon.append(axon_1.hoc)
         for i, axon in enumerate(self.axon):
-            print(axon)
             axon.L = L_target/2
             axon.nseg = int(nseg_total/2)
             axon.diam = diams
@@ -102,7 +100,6 @@ class CA1PyramidalCell(Cell):
                 axon.v = i1
             else:
                 axon.v = i2
-        print(self.axon)
 
     def make_axon(self):
         # axon
