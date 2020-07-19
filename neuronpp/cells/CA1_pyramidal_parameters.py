@@ -34,7 +34,6 @@ nax = 0.07 #will be less once more Na channels are added
 axon_nax = 0.09
 
 gnadend = 0.015
-gnanotrunk = 0*0.01  # 0.035
 
 AXNa = 1
 
