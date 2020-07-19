@@ -1,82 +1,91 @@
-TITLE  H-current that uses Na ions
-
-NEURON {
-	SUFFIX h
-        RANGE  gbar,vhalf, K, taun, ninf, g ,ina
-	USEION na READ ena WRITE ina      
-:	NONSPECIFIC_CURRENT i
-}
+TITLE I-h channel from Magee 1998 for distal dendrites
 
 UNITS {
-	(um) = (micrometer)
 	(mA) = (milliamp)
-	(uA) = (microamp)
 	(mV) = (millivolt)
-	(pmho) = (picomho)
-	(mmho) = (millimho)
+
+}
+
+PARAMETER {
+	v 		(mV)
+ ehd  = -30		(mV)        
+	celsius 	(degC)
+	ghdbar=.0001 	(mho/cm2)
+        vhalfl=-81   	(mV)
+	kl=-8
+        vhalft=-75   	(mV)
+        a0t=0.011      	(/ms)
+        zetat=2.2    	(1)
+        gmt=.4   	(1)
+	q10=4.5
+	qtl=1
 }
 
 
-
-PARAMETER {              : parameters that can be entered when function is called in cell-setup
-        dt             (ms)
-	v              (mV)
-        ena    = 50    (mV)
-        eh     = -10   (mV)
-	K      = 8.5   (mV)
-	gbar   = 0     (mho/cm2)  : initialize conductance to zero
-	:vhalf  = -90   (mV)       : half potential
-      vhalf  = -81   (mV)       : half potential
-     
-
-}	
-
-
-STATE {                : the unknown parameters to be solved in the DEs
-	n
+NEURON {
+	SUFFIX hd
+	NONSPECIFIC_CURRENT i
+        RANGE ghdbar, vhalfl
+        GLOBAL linf,taul
 }
 
-ASSIGNED {             : parameters needed to solve DE
-	ina (mA/cm2)
-	ninf
-	taun (ms)
-	g
+STATE {
+        l
 }
 
-        
+ASSIGNED {
+	i (mA/cm2)
+        linf      
+        taul
+        ghd
+}
 
-
-INITIAL {               : initialize the following parameter using states()
-	states()	
-	n = ninf
-	g = gbar*n
-	ina = g*(v-eh)
+INITIAL {
+	rate(v)
+	l=linf
 }
 
 
 BREAKPOINT {
-	SOLVE h METHOD derivimplicit
-	g = gbar*n
-	ina = g*(v-eh)  
+	SOLVE states METHOD cnexp
+	ghd = ghdbar*l
+	i = ghd*(v-ehd)
+
 }
 
-DERIVATIVE h {
-	states()
-        n' = (ninf - n)/taun
+
+FUNCTION alpt(v(mV)) {
+  alpt = exp(0.0378*zetat*(v-vhalft)) 
 }
 
-PROCEDURE states() {  
- 
- 	if (v > -30) {
-	   taun = 1
-	} else {
-           :taun = 2*(1/(exp((v+145)/-17.5)+exp((v+16.8)/16.5)) + 5) :h activation tau
-           taun = 5*(1/(exp((v+145)/-17.5)+exp((v+16.8)/16.5)) + 5) :h activation tau
-
-
-	}  
-         ninf = 1 - (1 / (1 + exp((vhalf - v)/K)))                  :steady state value
+FUNCTION bett(v(mV)) {
+  bett = exp(0.0378*zetat*gmt*(v-vhalft)) 
 }
+
+DERIVATIVE states {     : exact when v held constant; integrates over dt step
+        rate(v)
+        l' =  (linf - l)/taul
+}
+
+PROCEDURE rate(v (mV)) { :callable from hoc
+        LOCAL a,qt
+        qt=q10^((celsius-33)/10)
+        a = alpt(v)
+        linf = 1/(1 + exp(-(v-vhalfl)/kl))
+:       linf = 1/(1+ alpl(v))
+        taul = bett(v)/(qtl*qt*a0t*(1+a))
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 

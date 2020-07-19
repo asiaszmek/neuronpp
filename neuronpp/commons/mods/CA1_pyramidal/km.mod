@@ -12,28 +12,23 @@ PARAMETER {
 	ek
 	celsius 	(degC)
 	gbar=.0001 	(mho/cm2)
-	gk       	(mho/cm2)
-      : vhalfl=-40  	(mV)
-     vhalfl=-42	(mV)
-	kl=-4
-       : vhalft=-42   	(mV)
-       vhalft=-42 (mV)
-        a0t=0.04  	(/ms)
-      : a0t=0.009      	(/ms)
-
-      : zetat=7    	(1)
-      zetat=4
-        gmt=.7	(1)
-       	q10=5
+        vhalfl=-40   	(mV)
+	kl=-10
+        vhalft=-42   	(mV)
+        a0t=0.003      	(/ms)
+        zetat=7    	(1)
+        gmt=.4   	(1)
+	q10=5
 	b0=60
 	st=1
+	sh =0
 }
 
 
 NEURON {
-	SUFFIX km
+	SUFFIX kmb
 	USEION k READ ek WRITE ik
-        RANGE  gk,gbar,ik
+        RANGE  gbar,ik, sh
       GLOBAL inf, tau
 }
 
@@ -58,32 +53,28 @@ INITIAL {
 BREAKPOINT {
 	SOLVE state METHOD cnexp
 	ik = gbar*m^st*(v-ek)
-	gk = gbar*m^st
 }
 
 
 FUNCTION alpt(v(mV)) {
-  alpt = exp(0.0378*zetat*(v-vhalft)) 
+  alpt = exp(0.0378*zetat*(v-vhalft-sh)) 
 }
 
 FUNCTION bett(v(mV)) {
-  bett = exp(0.0378*zetat*gmt*(v-vhalft)) 
+  bett = exp(0.0378*zetat*gmt*(v-vhalft-sh)) 
 }
 
 DERIVATIVE state {
         rate(v)
-:        if (m<inf) {tau=taua} else {tau=taub}
 	m' = (inf - m)/tau
 }
 
 PROCEDURE rate(v (mV)) { :callable from hoc
         LOCAL a,qt
         qt=q10^((celsius-35)/10)
-        inf = (1/(1 + exp((v-vhalfl)/kl)))
+        inf = (1/(1 + exp((v-vhalfl-sh)/kl)))
         a = alpt(v)
         tau = b0 + bett(v)/(a0t*(1+a))
-:        taua = 50
-:        taub = 300
 }
 
 
