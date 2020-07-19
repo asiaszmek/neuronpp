@@ -30,8 +30,8 @@ axon_kap = 0.16
 potNa = 50
 gna = 1.2*0.035  # 0.035
 
-nax = 0.03 #will be less once more Na channels are added
-axon_nax = 0.06
+nax = 0.015 #will be less once more Na channels are added
+axon_nax = 0.045*1.2
 
 gnadend = 0.015
 
