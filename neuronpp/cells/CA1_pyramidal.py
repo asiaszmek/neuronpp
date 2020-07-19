@@ -377,7 +377,7 @@ class CA1PyramidalCell(Cell):
         for s in trunk:
             sec = s.hoc
             sec.insert("car")
-            sec.gcabar_car = 0.1*params.soma_car
+            sec.gcabar_car = 0.1*params.gsomacar
             sec.insert("cat")
             sec.insert("SK_channel")
             sec.cac_SK_channel = params.cac_SK_channel
@@ -422,7 +422,7 @@ class CA1PyramidalCell(Cell):
             sec = s.hoc
             sec.insert("car")
             sec.insert("calH")
-            sec.gcabar_car = 0.1*params.soma_car
+            sec.gcabar_car = 0.1*params.gsomacar
             sec.insert("cat")
             sec.insert("SK_channel")
             sec.cac_SK_channel = params.cac_SK_channel
