@@ -1,7 +1,6 @@
 import os
 from neuron import h
 from neuronpp.cells.cell import Cell
-from neuronpp.core.hocwrappers.sec import Sec
 from neuronpp.cells.morphology_points_short_axon import axon_points
 from neuronpp.cells.morphology_points import trunk_points
 from neuronpp.cells.morphology_points import points_apic, points_apic_continued
@@ -551,7 +550,7 @@ class CA1PyramidalCell(Cell):
             self.load_morpho(filepath=morpho_path)
             self._shorten_axon()
         else:
-            # self.make_morphology()
+            self.make_morphology()
             for sec in self.secs:
                 sec.hoc.nseg = 1 + int(sec.hoc.L/maximum_segment_length)
         h.distance()
