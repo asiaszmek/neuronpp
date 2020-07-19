@@ -71,13 +71,40 @@ class CA1PyramidalCell(Cell):
             sec.hoc.insert("nax")
             sec.hoc.ena = params.potNa
             if "axon" in sec.hoc.name():
-                sec.hoc.gbar_nax =  params.axon_nax
-            elif "apic" in sec.hoc.name() or "trunk" in sec.hoc.name():
+                sec.hoc.gbar_nax = params.axon_nax
+            elif  "trunk" in sec.hoc.name():
+                sec.hoc.insert("na3")
+                sec.hoc.insert("nap")
+                sec.gbar_na3 = params.gnadend
+                sec.gnabar_nap = params.soma_nap_gnabar
+                sec.K_nap = params.soma_K_nap
+                sec.vhalf_nap = params.soma_vhalf_nap
+                sec.hoc.gbar_nax = params.nax
+
+            elif "apic" in sec.hoc.name() :
+                sec.hoc.insert("na3")
+                sec.gbar_na3 = params.gnadend
+                sec.hoc.insert("nap")
+                sec.gnabar_nap = params.soma_nap_gnabar
+                sec.K_nap = params.soma_K_nap
+                sec.vhalf_nap = params.soma_vhalf_nap
                 sec.hoc.gbar_nax = params.nax
             elif "dend" in sec.hoc.name():
+                sec.hoc.insert("na3dend")
+                sec.hoc.insert("nap")
+                sec.gnabar_nap = params.soma_nap_gnabar
+                sec.K_nap = params.soma_K_nap
+                sec.vhalf_nap = params.soma_vhalf_nap
                 sec.hoc.gbar_nax = params.nax
             elif "soma" in sec.hoc.name():
                 sec.hoc.gbar_nax = params.nax
+                sec.hoc.insert("nap")
+                sec.hoc.insert("na3")
+                sec.gbar_na3 = params.gna
+                sec.ena = params.potNa
+                sec.gnabar_nap = params.soma_nap_gnabar
+                sec.K_nap = params.soma_K_nap
+                sec.vhalf_nap = params.soma_vhalf_nap
 
     def add_potassium_channels(self):
         soma = self.filter_secs("soma", as_list=True)[0].hoc
@@ -342,14 +369,6 @@ class CA1PyramidalCell(Cell):
         soma = self.filter_secs(name="soma", as_list=True)
         for s in soma:
             sec = s.hoc
-            sec.insert("na3")
-            sec.gbar_na3 = params.gna
-            sec.ena = params.potNa
-        
-            sec.insert("nap")
-            sec.gnabar_nap = params.soma_nap_gnabar
-            sec.K_nap = params.soma_K_nap
-            sec.vhalf_nap = params.soma_vhalf_nap
 
             sec.insert("cal")
             sec.gcalbar_cal = params.soma_caL/10
@@ -379,14 +398,6 @@ class CA1PyramidalCell(Cell):
             sec.cac_SK_channel = params.cac_SK_channel
             sec.insert("calH")
             sec.insert("BK_channel")
-            sec.insert("na3")
-            sec.gbar_na3 = params.gnadend
-
-            sec.insert("nap")
-            sec.gnabar_nap = params.soma_nap_gnabar
-            sec.K_nap = params.soma_K_nap
-            sec.vhalf_nap = params.soma_vhalf_nap
-
             for i, seg in enumerate(sec):
                 if i == sec.nseg - 1:
                     xdist = h.distance(sec(1.0))
@@ -427,21 +438,11 @@ class CA1PyramidalCell(Cell):
             sec.insert("car")
             sec.insert("calH")
             sec.gcabar_car = 0.1*params.soma_car
-
             sec.insert("cat")
             sec.insert("SK_channel")
             sec.cac_SK_channel = params.cac_SK_channel
 
             sec.insert("BK_channel")
-
-            sec.insert("na3")
-            sec.gbar_na3 = params.gnadend
-            sec.insert("nap")
-            sec.gnabar_nap = params.soma_nap_gnabar
-            sec.K_nap = params.soma_K_nap
-            sec.vhalf_nap = params.soma_vhalf_nap
-
-            sec.ek = params.potK
             for i, seg in enumerate(sec):
                 if i == sec.nseg - 1:
                     xdist = h.distance(sec(1.0))
@@ -471,15 +472,6 @@ class CA1PyramidalCell(Cell):
                 self.distribute_channel(seg, "BK_channel", "gkbar",
                                          new_BK)
 
-    def add_basal_tree_mechanisms(self):
-        dend = self.filter_secs("dend")
-        for s in dend:
-            sec = s.hoc
-            sec.insert("na3dend")
-            sec.insert("nap")
-            sec.gnabar_nap = params.soma_nap_gnabar
-            sec.K_nap = params.soma_K_nap
-            sec.vhalf_nap = params.soma_vhalf_nap
             
     def add_calcium(self, decay=True):
         if decay:
@@ -520,7 +512,6 @@ class CA1PyramidalCell(Cell):
         # self.add_axon_mechanisms()
         # self.add_trunk_mechanisms()
         # self.add_apical_mechanisms()
-        # self.add_basal_tree_mechanisms()
         # h.celsius = 34
         # self.add_calcium()
         # for sec in self.secs:

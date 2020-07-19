@@ -25,23 +25,37 @@ soma_caT = 0.00003
 
 soma_km = 0.002
 axon_km = 0.024
-potNa = 50
-
-BK_channel_init = 0.9*1.5*0.03  # 0.03 flag
-soma_nap_gnabar = 0*.5*0.000014
-
-soma_K_nap = 4.5
-soma_vhalf_nap = -60.4
-
-soma_SK_channel = 0.7*4.5*0.0001  # 0.003 flag
-soma_kap = 0.09
+soma_kap = 0.091
 axon_kap = 0.16
 
 soma_hbar = 1.8e-6
+
+
+potNa = 50
+soma_nap_gnabar = .5*0.000014
+
+soma_K_nap = 4.5
+soma_vhalf_nap = -60.4
 gna = 1.2*0.035  # 0.035
 
 nax = 0.07 #will be less once more Na channels are added
-axon_nax = 0.12
+axon_nax = 0.09
+
+gnadend = 0.015
+gnanotrunk = 0*0.01  # 0.035
+
+AXNa = 1
+
+BK_channel_init = 0.9*1.5*0.03  # 0.03 flag
+gkbar_BK_channel = 5.5*BK_channel_init
+
+
+soma_SK_channel = 0.7*4.5*0.0001  # 0.003 flag
+cac_SK_channel = 0.00075
+gbar_SK_channel = 0.5*soma_SK_channel
+SK_channel_distal_maxfactor = 1   # ORIG>> maximum cond. factor in dendrites
+SK_channel_distal_distance = 200  # ORIG>> distance in dendrites for maximum cond.
+
 
 axon_kdr = 0.04
 apic_kdr = 0.0073
@@ -49,24 +63,16 @@ dend_kdr = 0.0073
 soma_kdr = 0.0073
 
 
-gnadend = 0.015
-gnanotrunk = 0*0.01  # 0.035
 
 
-AXNa = 1
 
 potK = -90
 
-cac_SK_channel = 0.00075
-gbar_SK_channel = 0.5*soma_SK_channel
-gkbar_BK_channel = 5.5*BK_channel_init
 
 
 caT_distal_maxfactor = 4
 caT_distal_distance = 350
 
-SK_channel_distal_maxfactor = 1   # ORIG>> maximum cond. factor in dendrites
-SK_channel_distal_distance = 200  # ORIG>> distance in dendrites for maximum cond.
 
 taur_cad = 20
 potCa = 140
