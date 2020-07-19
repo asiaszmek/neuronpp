@@ -18,21 +18,17 @@ Cm_non_trunk = 1     # Oblique specific capacitance
 Cm_basal = 1    # Basal specific capacitance
 
 soma_caL = .00006
-soma_car = 0.00003
-gsomacar = 0.00008
-soma_calH = 0.0001  # 0.00017
-soma_caT = 0.00003
+gsomacar = 0.00003
+soma_calH = 0.00001  # 0.00017
+soma_caT = 0.000003
 
 soma_km = 0.002
 axon_km = 0.024
 soma_kap = 0.091
 axon_kap = 0.16
 
-soma_hbar = 1.8e-6
-
-
 potNa = 50
-soma_nap_gnabar = .5*0.000014
+soma_nap_gnabar = 0* .5*0.000014
 
 soma_K_nap = 4.5
 soma_vhalf_nap = -60.4
