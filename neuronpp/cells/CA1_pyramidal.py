@@ -74,37 +74,22 @@ class CA1PyramidalCell(Cell):
                 sec.hoc.gbar_nax = params.axon_nax
             elif  "trunk" in sec.hoc.name():
                 sec.hoc.insert("na3")
-                sec.hoc.insert("nap")
                 sec.gbar_na3 = params.gnadend
-                sec.gnabar_nap = params.soma_nap_gnabar
-                sec.K_nap = params.soma_K_nap
-                sec.vhalf_nap = params.soma_vhalf_nap
                 sec.hoc.gbar_nax = params.nax
 
             elif "apic" in sec.hoc.name() :
                 sec.hoc.insert("na3")
                 sec.gbar_na3 = params.gnadend
-                sec.hoc.insert("nap")
-                sec.gnabar_nap = params.soma_nap_gnabar
-                sec.K_nap = params.soma_K_nap
-                sec.vhalf_nap = params.soma_vhalf_nap
                 sec.hoc.gbar_nax = params.nax
             elif "dend" in sec.hoc.name():
                 sec.hoc.insert("na3dend")
                 sec.hoc.insert("nap")
-                sec.gnabar_nap = params.soma_nap_gnabar
-                sec.K_nap = params.soma_K_nap
-                sec.vhalf_nap = params.soma_vhalf_nap
                 sec.hoc.gbar_nax = params.nax
             elif "soma" in sec.hoc.name():
                 sec.hoc.gbar_nax = params.nax
-                sec.hoc.insert("nap")
                 sec.hoc.insert("na3")
                 sec.gbar_na3 = params.gna
                 sec.ena = params.potNa
-                sec.gnabar_nap = params.soma_nap_gnabar
-                sec.K_nap = params.soma_K_nap
-                sec.vhalf_nap = params.soma_vhalf_nap
 
     def add_potassium_channels(self):
         soma = self.filter_secs("soma", as_list=True)[0].hoc
