@@ -538,7 +538,7 @@ class CA1PyramidalCell(Cell):
         else:
             print("Unimplemented mechanism")
 
-    def __init__(self, name=None, compile_paths=f_path):
+    def __init__(self, name=None, compile_paths=f_path, morpho="migliore"):
         """
         :param name:
             The name of the cell
@@ -546,15 +546,16 @@ class CA1PyramidalCell(Cell):
             Folder with channels
         """
         Cell.__init__(self, name=name, compile_paths=compile_paths)
-        #self.make_morphology()
-        # adjust segment_number
-        morpho_path = os.path.join(path, "..", "commons", "morphologies",
-                                   "asc", "mpg141208_B_idA.asc")
-        self.load_morpho(filepath=morpho_path)
-        self._shorten_axon()
-        print(self.soma)
-        for sec in self.secs:
-            sec.hoc.nseg = 1 + int(sec.hoc.L/maximum_segment_length)
+        if morpho == "migliore":
+            # adjust segment_number
+            morpho_path = os.path.join(path, "..", "commons", "morphologies",
+                                       "asc", "mpg141208_B_idA.asc")
+            self.load_morpho(filepath=morpho_path)
+            self._shorten_axon()
+        else:
+            # self.make_morphology()
+            for sec in self.secs:
+                sec.hoc.nseg = 1 + int(sec.hoc.L/maximum_segment_length)
         h.distance()
         self.add_pas()
         self.add_soma_mechanisms()
@@ -562,8 +563,6 @@ class CA1PyramidalCell(Cell):
         self.add_trunk_mechanisms()
         self.add_apical_mechanisms()
         self.add_basal_tree_mechanisms()
-
-        
         h.celsius = 34
         self.add_calcium()
         for sec in self.secs:
