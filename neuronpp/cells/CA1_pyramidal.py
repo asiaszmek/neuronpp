@@ -79,9 +79,7 @@ class CA1PyramidalCell(Cell):
         count = 0
         diams = self.axon[0].diam
         # delete old axon
-        axon = self.filter_secs("axon")
-        for ax in axon:
-            ax.remove_immediate_from_neuron()
+        axon = self.remove_secs("axon")
         del self.axon
         self.axon = []
         
