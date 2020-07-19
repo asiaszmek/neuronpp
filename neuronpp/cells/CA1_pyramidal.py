@@ -467,7 +467,7 @@ class CA1PyramidalCell(Cell):
                 section = sec.hoc
                 section.insert("cad")
                 section.taur_cad = params.taur_cad
-                section.eca = 140#params.potCa
+                section.eca = params.potCa
         else:
             print("Unimplemented mechanism")
 
