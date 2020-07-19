@@ -242,8 +242,9 @@ class CA1PyramidalCell(Cell):
         self.make_dend()
 
     def add_soma_mechanisms(self):
-
-        for sec in self.soma:
+        soma = self.filter_secs(name="soma", as_list=True)
+        for s in soma:
+            sec = s.hoc
             sec.insert("na3")
             sec.gbar_na3 = params.gna
             sec.insert("kdr")
@@ -292,7 +293,9 @@ class CA1PyramidalCell(Cell):
             sec.gkbar_BK_channel = params.gkbar_BK_channel
 
     def add_axon_mechanisms(self):
-        for sec in self.axon:
+        axon = self.filter_secs("axon", as_list=True)
+        for s in axon:
+            sec = s.hoc
             sec.insert("nax")
             sec.gbar_nax = params.gna*params.AXNa
             sec.insert("kdr")
@@ -310,7 +313,9 @@ class CA1PyramidalCell(Cell):
             sec.ek = params.potK
 
     def add_trunk_mechanisms(self):
-        for sec in self.trunk:
+        trunk = self.filter_secs("trunk")
+        for s in trunk:
+            sec = s.hoc
             sec.insert("car")
             sec.gcabar_car = 0.1*params.soma_car
             sec.insert("cat")
@@ -400,9 +405,9 @@ class CA1PyramidalCell(Cell):
                                              params.soma_kap*(1 + xdist/100))
 
     def add_apical_mechanisms(self):
-        
-        for sec in self.apic:
-            #sec = s.hoc
+        apic = self.filter_secs("apic", as_list=True)
+        for s in apic:
+            sec = s.hoc
             sec.insert("car")
             sec.insert("calH")
             sec.gcabar_car = 0.1*params.soma_car
@@ -490,7 +495,9 @@ class CA1PyramidalCell(Cell):
                 self._distribute_channel(seg, "kap", "gkabar", new_kap)
 
     def add_basal_tree_mechanisms(self):
-        for sec in self.dend:
+        dend = self.filter_secs("dend")
+        for s in dend:
+            sec = s.hoc
             sec.insert("na3dend")
             sec.insert("nap")
             sec.gnabar_nap = params.soma_nap_gnabar
@@ -514,8 +521,9 @@ class CA1PyramidalCell(Cell):
             
     def add_calcium(self, decay=True):
         if decay:
-            ca_sections = self.soma  + self.apic
-            for section in ca_sections:
+            ca_sections = self.filter_secs("soma", as_list=True) + self.filter_secs("trunk", as_list=True) + self.filter_secs("apic", as_list=True)
+            for sec in ca_sections:
+                section = sec.hoc
                 section.insert("cad")
                 section.taur_cad = params.taur_cad
                 section.eca = 140#params.potCa
@@ -542,7 +550,7 @@ class CA1PyramidalCell(Cell):
         h.distance()
         self.add_soma_mechanisms()
         self.add_axon_mechanisms()
-        #self.add_trunk_mechanisms()
+        self.add_trunk_mechanisms()
         self.add_apical_mechanisms()
         self.add_basal_tree_mechanisms()
 
