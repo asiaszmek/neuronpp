@@ -138,8 +138,10 @@ class CA1PyramidalCell(Cell):
 
     def _shorten_axon(self):
         L_target = 60
-        nseg0 = 5
-        nseg_total = 2*nseg0
+        nseg = 5
+        nseg_total = 2*nseg
+        
+        chunkSize = L_target/nseg_total
         nSec = len(self.axon)
         if not nSec:
             raise "No axon"
