@@ -28,10 +28,6 @@ soma_kap = 0.091
 axon_kap = 0.16
 
 potNa = 50
-soma_nap_gnabar = 0* .5*0.000014
-
-soma_K_nap = 4.5
-soma_vhalf_nap = -60.4
 gna = 1.2*0.035  # 0.035
 
 nax = 0.07 #will be less once more Na channels are added
