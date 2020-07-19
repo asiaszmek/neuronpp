@@ -15,12 +15,54 @@ maximum_segment_length = 75
 
 def dist_e_pas(x):
     return -65.2 - 5*x/150
-    
+
+
 class CA1PyramidalCell(Cell):
     @staticmethod
     def _distribute_channel(x, mech, mech_param, val):
         mech_obj = getattr(x, mech)
         setattr(mech_obj, mech_param, val)
+
+    def add_pas(self):
+        for section in self.secs:
+            sec = section.hoc
+            if "soma" in sec.name():
+                sec.insert("pas")
+                sec.g_pas = 1/params.Rm_soma
+                dist = h.distance(sec(0.5))
+                sec.e_pas = dist_e_pas(dist)
+                sec.Ra = params.Ra_soma
+                sec.cm = params.Cm_soma
+
+            if "axon" in sec.name():
+                sec.insert("pas")
+                sec.g_pas = 1/params.Rm_axon
+                sec.e_pas = params.axon_e_pas
+                sec.Ra = params.Ra_axon
+                sec.cm = params.Cm_axon
+
+            if "trunk" in sec.name():
+                sec.insert("pas")
+                sec.g_pas = 1/params.Rm_trunk
+                dist = h.distance(sec(0.5))
+                sec.e_pas = dist_e_pas(dist)
+                sec.Ra = params.Ra_trunk
+                sec.cm = params.Cm_trunk
+            if "apic" in sec.name():
+                sec.insert("pas")
+                sec.g_pas = 1/params.Rm_non_trunk
+                dist = h.distance(sec(0.5))
+                sec.e_pas = dist_e_pas(dist)
+                sec.Ra = params.Ra_non_trunk
+                sec.cm = params.Cm_non_trunk
+            if "dend" in sec.name():
+                sec.insert("pas")
+                sec.g_pas = 1/params.Rm_basal
+                dist = h.distance(sec(0.5))
+                sec.e_pas = dist_e_pas(dist)
+                sec.Ra = params.Ra_basal
+                sec.cm = params.Cm_basal
+
 
     def _shorten_axon(self):
         L_target = 60
@@ -255,14 +297,6 @@ class CA1PyramidalCell(Cell):
             sec.gnabar_nap = params.soma_nap_gnabar
             sec.K_nap = params.soma_K_nap
             sec.vhalf_nap = params.soma_vhalf_nap
-            
-            sec.insert("pas")
-            sec.g_pas = 1/params.Rm_soma
-
-            dist = h.distance(sec(0.5))
-            sec.e_pas = dist_e_pas(dist)
-            sec.Ra = params.Ra_soma
-            sec.cm = params.Cm_soma
 
             sec.insert("h")
             sec.gbar_h = params.soma_hbar
@@ -301,11 +335,6 @@ class CA1PyramidalCell(Cell):
             sec.insert("kdr")
             sec.gkdrbar_kdr = params.gkdr*params.AXKdr
             sec.ena = params.potNa
-            sec.insert("pas")
-            sec.g_pas = 1/params.Rm_axon
-            sec.e_pas = params.axon_e_pas
-            sec.Ra = params.Ra_axon
-            sec.cm = params.Cm_axon
             sec.insert("km")
             sec.gbar_km = 3*params.soma_km
             sec.insert("kap")
@@ -341,12 +370,6 @@ class CA1PyramidalCell(Cell):
             sec.insert("km")
             sec.gbar_km = params.soma_km
 
-            sec.insert("pas")
-            sec.g_pas = 1/params.Rm_trunk
-            dist = h.distance(sec(0.5))
-            sec.e_pas = dist_e_pas(dist)
-            sec.Ra = params.Ra_trunk
-            sec.cm = params.Cm_trunk
             sec.ek = params.potK
             for i, seg in enumerate(sec):
                 if i == sec.nseg - 1:
@@ -436,12 +459,6 @@ class CA1PyramidalCell(Cell):
             sec.insert("km")
             sec.gbar_km = params.soma_km
 
-            sec.insert("pas")
-            sec.g_pas = 1/params.Rm_non_trunk
-            dist = h.distance(sec(0.5))
-            sec.e_pas = dist_e_pas(dist)
-            sec.Ra = params.Ra_non_trunk
-            sec.cm = params.Cm_non_trunk
             sec.ek = params.potK
             for i, seg in enumerate(sec):
                 if i == sec.nseg - 1:
@@ -511,12 +528,6 @@ class CA1PyramidalCell(Cell):
             sec.gbar_na3dend = params.gnadend
             sec.gkdrbar_kdr = params.gkdrdend
             sec.ena = params.potNa
-            sec.insert("pas")
-            sec.g_pas = 1/params.Rm_basal
-            dist = h.distance(sec(0.5))
-            sec.e_pas = dist_e_pas(dist)
-            sec.Ra = params.Ra_basal
-            sec.cm = params.Cm_basal
             sec.ek = params.potK
             
     def add_calcium(self, decay=True):
@@ -548,6 +559,7 @@ class CA1PyramidalCell(Cell):
         for sec in self.secs:
             sec.hoc.nseg = 1 + int(sec.hoc.L/maximum_segment_length)
         h.distance()
+        self.add_pas()
         self.add_soma_mechanisms()
         self.add_axon_mechanisms()
         self.add_trunk_mechanisms()
