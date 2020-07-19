@@ -571,6 +571,4 @@ class CA1PyramidalCell(Cell):
                 sec.hoc.eca = 140
                 h.ion_style("ca_ion",0, 1, 0, 0, 0, sec=sec.hoc)
             if h.ismembrane("kdr", sec=sec.hoc):
-                print(sec.hoc.name())
                 sec.hoc.ek = -77
-            print(sec.hoc.name(), sec.hoc.psection()["density_mechs"]["pas"], sec.hoc.cm, sec.hoc.Ra)
