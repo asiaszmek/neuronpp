@@ -365,7 +365,6 @@ class CA1PyramidalCell(Cell):
             sec.gcabar_car = params.gsomacar
             
             sec.insert("SK_channel")
-            sec.cac_SK_channel = params.cac_SK_channel
             sec.gbar_SK_channel = params.gbar_SK_channel
             
             sec.insert("BK_channel")  # K(Ca) fAHP potassium type current
@@ -380,7 +379,6 @@ class CA1PyramidalCell(Cell):
             sec.gcabar_car = 0.1*params.gsomacar
             sec.insert("cat")
             sec.insert("SK_channel")
-            sec.cac_SK_channel = params.cac_SK_channel
             sec.insert("calH")
             sec.insert("BK_channel")
             for i, seg in enumerate(sec):
@@ -425,7 +423,6 @@ class CA1PyramidalCell(Cell):
             sec.gcabar_car = 0.1*params.gsomacar
             sec.insert("cat")
             sec.insert("SK_channel")
-            sec.cac_SK_channel = params.cac_SK_channel
 
             sec.insert("BK_channel")
             for i, seg in enumerate(sec):
