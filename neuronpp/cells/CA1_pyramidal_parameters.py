@@ -64,6 +64,12 @@ potK = -90
 caT_distal_maxfactor = 4
 caT_distal_distance = 350
 
-
-taur_cad = 20
+ca_basal = 70e-6 #Sabatini life-cycle
+taur_cad_dend = 20 # Sabatini
+taur_cad_spine = 14
+taur_cad_large = 100
 potCa = 140
+
+buffer_cad_spine = 20
+buffer_cad_dend = 20
+buffer_cad_large = 80

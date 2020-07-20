@@ -456,13 +456,25 @@ class CA1PyramidalCell(Cell):
 
             
     def add_calcium(self, decay=True):
+        #  Ca decay constants are taken from Sabatinis "The Life cycle of
+        #  Ca2+ ions"
         if decay:
-            ca_sections = self.filter_secs("soma", as_list=True) + self.filter_secs("trunk", as_list=True) + self.filter_secs("apic", as_list=True)
-            for sec in ca_sections:
-                section = sec.hoc
-                section.insert("cad")
-                section.taur_cad = params.taur_cad
-                section.eca = params.potCa
+            for sec in self.secs:
+                if h.ismembrane("ca_ion", sec=sec.hoc):
+                    section = sec.hoc
+                    section.insert("cad")
+                    section.eca = params.potCa
+                    section.cainf_cad = params.ca_basal
+                    if "spine" in section.name():
+                        section.taur_cad = params.taur_cad_spine
+                        section.buffer_cad = params.buffer_cad_spine
+                    elif section.diam < 3:
+                        section.taur_cad = params.taur_cad_dend
+                        section.buffer_cad = params.buffer_cad_dend
+                    else:
+                        section.taur_cad = params.taur_cad_large
+                        section.buffer_cad = params.buffer_cad_large
+                    h.ion_style("ca_ion",0, 1, 0, 0, 0, sec=section)
         else:
             print("Unimplemented mechanism")
 

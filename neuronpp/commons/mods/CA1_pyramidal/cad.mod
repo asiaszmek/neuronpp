@@ -40,7 +40,7 @@ INDEPENDENT {t FROM 0 TO 1 WITH 1 (ms)}
 NEURON {
 	SUFFIX cad
 	USEION ca READ ica, cai WRITE cai
-        RANGE ca, depth,cainf,taur
+        RANGE ca, depth,cainf,taur, buffer
 }
 
 UNITS {
@@ -55,7 +55,7 @@ UNITS {
 PARAMETER {
 	depth	= .05	(um)		: depth of shell
 	taur	= 1400	(ms)		: rate of calcium removal
-										        buffer = 18 (mM)                : buffer capacity
+	buffer = 18 (mM)                : buffer capacity
 	cainf	= 100e-6(mM)
 	cai		(mM)
 }
