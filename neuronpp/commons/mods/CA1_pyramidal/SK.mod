@@ -49,7 +49,7 @@ TITLE Slow Ca-dependent potassium current
                                     cai     = 2.4e-5 (mM)           : initial [Ca]i
                                     gbar    = 0.01   (mho/cm2)
                                     beta    = 0.03   (1/ms)          : backward rate constant
-                                    cac     = 0.025  (mM)            : middle point of activation fct
+                                    cac     = 0.00057  (mM)            : middle point of activation fct
        				    taumin  = 5    (ms)            : minimal value of the time cst
                                     gk
                                   }
