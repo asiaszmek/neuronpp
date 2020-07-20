@@ -73,21 +73,21 @@ class CA1PyramidalCell(Cell):
             if "axon" in sec.hoc.name():
                 sec.hoc.gbar_nax = params.axon_nax
             elif  "trunk" in sec.hoc.name():
-                # sec.hoc.insert("na3")
-                # sec.gbar_na3 = params.gnadend
+                sec.hoc.insert("na3")
+                sec.gbar_na3 = params.gnadend
                 sec.hoc.gbar_nax = params.nax
-
             elif "apic" in sec.hoc.name() :
-                # sec.hoc.insert("na3")
-                # sec.gbar_na3 = params.gnadend
+                sec.hoc.insert("na3")
+                sec.gbar_na3 = params.gnadend
                 sec.hoc.gbar_nax = params.nax
             elif "dend" in sec.hoc.name():
-                #sec.hoc.insert("na3dend")
+                sec.hoc.insert("na3dend")
                 sec.hoc.gbar_nax = params.nax
+                sec.gbar_na3dend = params.gnadend
             elif "soma" in sec.hoc.name():
                 sec.hoc.gbar_nax = params.nax
-                # sec.hoc.insert("na3")
-                # sec.gbar_na3 = params.gna
+                sec.hoc.insert("na3")
+                sec.gbar_na3 = params.gna
 
     def add_potassium_channels(self):
         soma = self.filter_secs("soma", as_list=True)[0].hoc
