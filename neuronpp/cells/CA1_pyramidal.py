@@ -105,13 +105,17 @@ class CA1PyramidalCell(Cell):
             elif "apic" in sec.hoc.name() or "trunk" in sec.hoc.name():
                 sec.hoc.insert("hd")
                 sec.hoc.insert("kad")
+                sec.hoc.insert("kmb")
                 sec.hoc.ek = params.potK
                 sec.hoc.gkdrbar_kdr = params.apic_kdr
+                sec.hoc.gbar_kmb = params.soma_km*0.2
             elif "dend" in sec.hoc.name():
                 sec.hoc.insert("kad")
                 sec.hoc.insert("hd")
+                sec.hoc.insert("kmb")
                 sec.hoc.ek = params.potK
                 sec.hoc.gkdrbar_kdr = params.dend_kdr
+                sec.hoc.gbar_kmb = params.soma_km*0.2
 
             elif "soma" in sec.hoc.name():
                 sec.hoc.insert("kmb")
