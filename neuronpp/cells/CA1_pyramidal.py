@@ -2,11 +2,13 @@ import os
 from numpy import exp
 from neuron import h
 from neuronpp.cells.cell import Cell
+from neuronpp.core.hocwrappers.sec import Sec
 from neuronpp.cells.morphology_points_short_axon import axon_points
 from neuronpp.cells.morphology_points import trunk_points
 from neuronpp.cells.morphology_points import points_apic, points_apic_continued
 from neuronpp.cells.morphology_points import points_dend, points_dend_continued
 import neuronpp.cells.CA1_pyramidal_parameters as params
+
 
 
 path = os.path.dirname(os.path.abspath(__file__))
@@ -24,6 +26,23 @@ def dist_hd(x):
 
 
 class CA1PyramidalCell(Cell):
+    def set_cao(self, value, secs=None):
+        if secs is None:
+            sec_list = self.secs
+        elif isinstance(secs, str):
+            sec_list = self.filter_secs(name=secs, as_list=True)
+        elif isinstance(secs, list):
+            sec_list = secs
+        elif isinstance(secs, Sec):
+            sec_list = [Sec]
+        print("Setting extracellular Ca to %4.2f for" % value, sec_list)
+        for sec in sec_list:
+            try:
+                sec.hoc.cao = value
+            except AttributeError:
+                sec.cao = value
+        return sec_list
+
     def distribute_channel(self, x, mech, mech_param, val):
         mech_obj = getattr(x, mech)
         setattr(mech_obj, mech_param, val)

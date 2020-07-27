@@ -15,6 +15,9 @@ fig, ax = plt.subplots(1, 1)
 injections = [-.8, -.6, -.2, 0, .200, .400]
 neuron.h.celsius = 34
 
+out = cell.set_cao(2.5)
+
+
 for inj in injections:
     print(inj)
     ic = neuron.h.IClamp(soma.hoc(0.5))
