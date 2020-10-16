@@ -470,8 +470,13 @@ class Combe2018Cell(Cell):
             ca_sections = [self.soma] + self.trunk + self.apic
             for section in ca_sections:
                 section.hoc.insert("cad")
-                section.hoc.taur_cad = params.taur_cad
-                section.hoc.eca = 140#params.potCa
+                section.hoc.cainf_cad = 50e-6
+                if section.hoc.diam < 3:
+                    section.taur_cad = 20
+                    section.buffer_cad = 20
+                else:
+                    section.taur_cad = 100
+                    section.buffer_cad = 80
         else:
             print("Unimplemented mechanism")
 
@@ -499,7 +504,3 @@ class Combe2018Cell(Cell):
         
         h.celsius = 34
         self.add_calcium()
-        for sec in self.secs:
-            if h.ismembrane("ca_ion", sec=sec.hoc):
-                sec.hoc.eca = 140
-                h.ion_style("ca_ion",0, 1, 0, 0, 0, sec=sec.hoc)

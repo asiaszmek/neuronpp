@@ -56,6 +56,7 @@ PARAMETER {
 	depth	= .05	(um)		: depth of shell
 	taur	= 1400	(ms)		: rate of calcium removal
 	cainf	= 100e-6(mM)
+	buffer  = 20 (mM)
 	cai		(mM)
 }
 
@@ -81,7 +82,7 @@ DERIVATIVE state {
 	drive_channel =  - (10000) * ica / (2 * FARADAY * depth)
 	if (drive_channel <= 0.) { drive_channel = 0.  }   : cannot pump inward
 
-	ca' = drive_channel/18 + (cainf-ca)/(taur)
+	ca' = drive_channel/buffer + (cainf-ca)/(taur)
     : ca' = drive_channel/20 + (cainf -ca)/(taur*9)
 
 	cai = ca
