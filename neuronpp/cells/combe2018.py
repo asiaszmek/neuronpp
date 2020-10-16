@@ -182,7 +182,8 @@ class Combe2018Cell(Cell):
         self.connect_secs(self.dend[39], self.dend[37])
         self.connect_secs(self.dend[40], self.dend[36])
         self.connect_secs(self.dend[41], self.dend[35])
-        self.connect_secs(self.dend[42], self.soma, source_loc=0, target_loc=0)
+        self.connect_secs(self.dend[42], self.soma, child_loc=0,
+                          parent_loc=0)
         for i in [43, 44]:
             self.connect_secs(self.dend[i], self.dend[i - 1])
         self.connect_secs(self.dend[45], self.dend[43])
