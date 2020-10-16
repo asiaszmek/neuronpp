@@ -6,8 +6,8 @@ TITLE Ca L-type channel with high treshold of activation
 
 NEURON {
 	SUFFIX calH
-	USEION ca READ eca WRITE ica
-        RANGE gcal,gcalbar, m, h,ica
+	USEION ca READ cai, cao WRITE ica
+        RANGE gcal,gcalbar, m, h,ica, cai
 	RANGE inf, fac, tau
 }
 
@@ -24,7 +24,9 @@ PARAMETER {          : parameters that can be entered when function is called in
 	dt              (ms)
         gcalbar = 0     (mho/cm2) : initialized conductance
         gcal            (mho/cm2) : initialized conductance
-	eca = 140       (mV)      : Ca++ reversal potential
+
+	cai = 50.e-6 (mM)
+	cao = 2 (mM)								      
         }
 
 STATE {	m h }                     : unknown activation and inactivation parameters to be solved in the DEs  
@@ -47,7 +49,7 @@ INITIAL {
 
 BREAKPOINT {
 	SOLVE state METHOD cnexp
-	ica = gcalbar*m*m*m*h*(v - eca)
+	ica = gcalbar*m*m*m*h*ghk(v,cai,cao)
 	gcal = gcalbar*m*m*m*h
 
 }
@@ -94,3 +96,22 @@ FUNCTION vartau(v, i) {
 }	
 
 
+FUNCTION ghk(v(mV), ci(mM), co(mM)) (mV) {
+        LOCAL nu,f
+        f = KTF(celsius)/2
+        nu = v/f
+        ghk=-f*(1. - (ci/co)*exp(nu))*efun(nu)
+}
+
+FUNCTION KTF(celsius (DegC)) (mV) {
+        KTF = ((25./293.15)*(celsius + 273.15))
+}
+
+
+FUNCTION efun(z) {
+	if (fabs(z) < 1e-4) {
+		efun = 1 - z/2
+	}else{
+		efun = z/(exp(z) - 1)
+	}
+}

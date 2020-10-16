@@ -33,15 +33,14 @@ ASSIGNED {               : parameters needed to solve DE
         v               (mV)
         celsius 	(degC)
 	   
-	cai             (mM)      : initial internal Ca++ concentration
-	cao             (mM)      : initial external Ca++ concentration
+	
 }
 
 
 PARAMETER {              : parameters that can be entered when function is called in cell-setup
         gcabar = 0      (mho/cm2) : initialized conductance
-        eca = 140       (mV)      : Ca++ reversal potential
-
+	cai             (mM)      : initial internal Ca++ concentration
+	cao   =     2    (mM)      : initial external Ca++ concentration
        
 }  
 
@@ -60,7 +59,7 @@ INITIAL {
 BREAKPOINT {
 	SOLVE states METHOD cnexp
 	:ecar = (1e3) * (R*(celsius+273.15))/(2*FARADAY) * log (cao/cai)
-	ica = gcabar*m*m*m*h*(v - eca)
+	ica = gcabar*m*m*m*h*ghk(v, cai, cao)
 
 }
 
@@ -104,3 +103,22 @@ FUNCTION vartau(v(mV), i) (ms){
 
 
 
+FUNCTION ghk(v(mV), ci(mM), co(mM)) (mV) {
+        LOCAL nu,f
+        f = KTF(celsius)/2
+        nu = v/f
+        ghk=-f*(1. - (ci/co)*exp(nu))*efun(nu)
+}
+
+FUNCTION KTF(celsius (DegC)) (mV) {
+        KTF = ((25./293.15)*(celsius + 273.15))
+}
+
+
+FUNCTION efun(z) {
+	if (fabs(z) < 1e-4) {
+		efun = 1 - z/2
+	}else{
+		efun = z/(exp(z) - 1)
+	}
+}
