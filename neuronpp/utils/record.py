@@ -1,27 +1,42 @@
-from typing import Union, List, Optional
-from collections import defaultdict, namedtuple
-
 import numpy as np
 import pandas as pd
 from neuron import h
 import matplotlib.pyplot as plt
+from collections import defaultdict
+from typing import Union, Optional, Iterable
+
+from nrn import Mechanism
 
 from neuronpp.core.hocwrappers.sec import Sec
 from neuronpp.utils.RecordOutput import RecordOutput
+from neuronpp.core.neuron_removable import NeuronRemovable
+from neuronpp.core.hocwrappers.hoc_wrapper import HocWrapper
 
 
-class Record:
-    def __init__(self, elements, variables='v'):
+class Record(NeuronRemovable):
+    def __init__(self, elements: Union[Iterable[Union[HocWrapper, Mechanism]],
+                                       Union[HocWrapper, Mechanism]],
+                 variables='v'):
         """
+        Making Record after simulation run() makes it has no effect on the current simulation.
+        However it will appear in the next simulation if:
+         * you call reinit() on the Simulation object
+         * or create a new Simulation object
+
         :param elements:
-            elements can any object from HocWrappers which implements hoc param
+            any HocWrapper except GroupHocWrapper or NEURON Mechanism object eg.
+                soma(0.5).hoc.pas
+            SynapticGroup will not work, however you can use SynapticGroup's each SingleSynapse
+            separately and pass it as SingleSynapse which is a HocWrapper eg.
+                exp_syn = syngroup["ExpSyn"][0]
+            which indicates first synapse of type ExpSyn.
         :param variables:
             str or list_of_str of variable names to track
         """
         if h.t > 0:
             # TODO: Change all warnings and prints to loggers
             print("Warning: Record created after simulation have been initiated, will not affect "
-                  "this simulation, but rather the next one after you execute reset() method on "
+                  "this simulation, but rather the next one after you execute reinit() method on "
                   "the Simulation object.")
 
         if not isinstance(elements, (list, set, tuple)):
@@ -46,12 +61,18 @@ class Record:
                 else:
                     name = elem.name
 
+                if isinstance(elem, HocWrapper):
+                    elem = elem.hoc
+                elif isinstance(elem, Mechanism):
+                    pass
+                else:
+                    raise TypeError("Not allowed type for Record. "
+                                    "Types allowed are: HocWrapper or nrn.Mechanism.")
+
                 try:
-                    s = getattr(elem.hoc, "_ref_%s" % var)
+                    s = getattr(elem, "_ref_%s" % var)
                 except AttributeError:
-                    raise AttributeError(
-                        "there is no attribute of %s. Maybe you forgot to append loc param "
-                        "for sections?" % var)
+                    raise AttributeError("there is no attribute of %s" % var)
 
                 rec = h.Vector().record(s)
                 self.recs[var].append((name, rec))
@@ -98,7 +119,7 @@ class Record:
             for i, (segment_name, rec) in enumerate(variable_recs):
                 rec_np = rec.as_numpy()
                 if np.max(np.isnan(rec_np)):
-                    raise ValueError("Vector recorded for variable: '%s' and segment: '%s' "
+                    raise ValueError("Vector recorded for variable: '%s' in the segment: '%s' "
                                      "contains nan values." % (var_name, segment_name))
 
                 if position is not "merge":
@@ -204,13 +225,14 @@ class Record:
 
         for seg_name, rec in self.recs[variable]:
             if seg_name in segment_name:
-                result.append(rec.as_numpy())
+                result.append(np.array(rec.as_numpy()))
 
         result = np.array(result)
         if result.shape[0] == 1:
             result = result[0]
 
-        return RecordOutput(records=result, time=self.time.as_numpy())
+        time = np.array(self.time.as_numpy())
+        return RecordOutput(variable=variable, records=result, time=time)
 
     def to_csv(self, filename):
         cols = ['time']

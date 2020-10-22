@@ -1,4 +1,3 @@
-
 from neuronpp.utils.record import Record
 from neuronpp.utils.simulation import Simulation
 from neuronpp.cells.ebner2019_ach_da_cell import Ebner2019AChDACell
@@ -10,7 +9,7 @@ if __name__ == '__main__':
     cell = Ebner2019AChDACell("cell")
     cell.add_sec("soma", diam=20, l=20, nseg=10)
     cell.add_sec("dend", diam=8, l=500, nseg=100)
-    cell.connect_secs(source="dend", target="soma", source_loc=0, target_loc=1)
+    cell.connect_secs(child="dend", parent="soma", child_loc=0, parent_loc=1)
 
     # make synapses with spines
     syns_4p, heads = cell.add_random_synapses_with_spine(source=None, secs=cell.secs,
@@ -24,7 +23,7 @@ if __name__ == '__main__':
         syn_da = cell.add_synapse(source=None, mod_name="SynDa", seg=h(1.0), netcon_weight=0.1,
                                   delay=1)
         cell.set_synaptic_pointers(s, syn_ach, syn_da)
-        cell.group_synapses("input_syn", s, syn_ach, syn_da)
+        cell.group_synapses(tag="input_syn", synapses=[s, syn_ach, syn_da])
 
     # add mechanisms
     cell.make_default_mechanisms()
@@ -39,14 +38,14 @@ if __name__ == '__main__':
     rec_syn = Record(syn4p, variables="w stdp_ach ach_stdp ACh ACh_w")
     rec_soma = Record(soma(0.5), variables="v")
 
-    sim = Simulation(init_v=-80, warmup=WARMUP)
+    sim = Simulation(init_v=-80, warmup=WARMUP, warmup_on_create=True)
 
     event = 0
     inter = 5
     for i in range(10):
         for syn in syns:
-            syn['Syn4PAChDa'].make_event(event)
-            syn['SynACh'].make_event(event)
+            syn['Syn4PAChDa'][0].make_event(event)
+            syn['SynACh'][0].make_event(event)
             event += inter
 
     sim.run(runtime=150)

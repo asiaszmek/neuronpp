@@ -1,8 +1,10 @@
 from neuronpp.core.cells.core_cell import CoreCell
 
+from neuronpp.core.decorators import non_removable_fields
 from neuronpp.core.cells.synaptic_spine_cell import SynapticSpineCell
 
 
+@non_removable_fields("population")
 class Cell(SynapticSpineCell):
     def __init__(self, name=None, compile_paths=None, population=None):
         """

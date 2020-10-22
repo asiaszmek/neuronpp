@@ -1,10 +1,10 @@
 import os
 import shutil
+from argparse import ArgumentParser
+from distutils.file_util import copy_file
+from subprocess import PIPE, Popen, STDOUT
 
 import neuron
-from argparse import ArgumentParser
-from distutils.dir_util import copy_tree, remove_tree
-from distutils.file_util import copy_file
 
 
 class CompileMOD:
@@ -46,18 +46,22 @@ class CompileMOD:
             self.copy_mods(s, target_path)
 
         os.chdir(target_path)
-        r = os.popen('nrnivmodl')
-        output = r.read()
+        p = Popen('nrnivmodl', shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
+        output = p.stdout.read().decode('utf-8')
 
-        if "failed" in output.lower():
-            error_msg = [s for s in output.lower().split("\n") if "failed" in s][0]
-            raise RuntimeError("MOD compilation error: %s" % error_msg)
+        print('nrniv output:', output)
+        print('mod path:', target_path)
+        print('mod path list dir:', os.listdir(target_path))
+
+        if "failed" in output.lower() or "error" in output.lower():
+            raise RuntimeError("MOD compilation error: %s" % output)
         else:
             print(output)
 
         os.chdir(working_dir)
 
     def copy_mods(self, source_path, tmp_path):
+        mods_found = 0
         for filename in os.listdir(source_path):
             filepath = "%s%s%s" % (source_path, os.sep, filename)
 
@@ -65,6 +69,9 @@ class CompileMOD:
                 continue
             elif filename.endswith(".mod"):
                 copy_file(src=filepath, dst=tmp_path, update=1)
+                mods_found += 1
+        if mods_found == 0:
+            raise RuntimeError("No MOD files found on path: %s" % source_path)
 
 
 if __name__ == '__main__':
@@ -74,19 +81,22 @@ if __name__ == '__main__':
            " it will work as well."
     parser = ArgumentParser(description=desc)
 
-    parser.add_argument("-s", "--sources", help="Paths to the source folder.", required=True, nargs='+')
+    parser.add_argument("-s", "--sources", help="Paths to the source folder.", required=True,
+                        nargs='+')
     parser.add_argument("-t", "--target", help="Path to the target folder.", required=True)
-    parser.add_argument("-c", "--compiled_folder_name", help="Name of the folder containing MOD files in your OS."
-                                                             "By default it is 'x86_64' for 64 architecture on Linux.",
+    parser.add_argument("-c", "--compiled_folder_name",
+                        help="Name of the folder containing MOD files in your OS."
+                             "By default it is 'x86_64' for 64 architecture on Linux.",
                         default="x86_64")
-    parser.add_argument("-m", "--mod_compile_command", help="MOD compile command of NEURON. By default it is 'nrnivmodl "
-                                                            "which is Linux command'. You can give different command specific for your OS",
+    parser.add_argument("-m", "--mod_compile_command",
+                        help="MOD compile command of NEURON. By default it is 'nrnivmodl "
+                             "which is Linux command'. You can give different command specific for your OS",
                         default='nrnivmodl')
     args = parser.parse_args()
 
-    comp = CompileMOD(compiled_folder_name=args.compiled_folder_name, mod_compile_command=args.mod_compile_command)
+    comp = CompileMOD(compiled_folder_name=args.compiled_folder_name,
+                      mod_compile_command=args.mod_compile_command)
     comp.compile(source_paths=args.sources, target_path=args.target)
-
 
 mods_loaded = []
 
@@ -98,9 +108,10 @@ def compile_and_load_mods(mod_folders):
     mod_folders = [m for m in mod_folders if m not in mods_loaded]
 
     if len(mod_folders) > 0:
+        # Compile
         comp = CompileMOD()
         targ_path = os.path.join(os.getcwd(), "compiled", "mods%s" % len(mods_loaded))
         comp.compile(source_paths=mod_folders, target_path=targ_path)
+        # Load
         neuron.load_mechanisms(targ_path)
         mods_loaded.extend(mod_folders)
-

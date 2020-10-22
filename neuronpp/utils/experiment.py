@@ -1,5 +1,6 @@
 from collections import namedtuple
 
+from neuronpp.core.neuron_removable import NeuronRemovable
 from neuronpp.utils.iclamp import IClamp
 from neuronpp.core.hocwrappers.seg import Seg
 from neuronpp.core.cells.netstim_cell import NetStimCell
@@ -9,7 +10,7 @@ EpspProtocol = namedtuple("EpspProtocol", "num init int w delay thr syn")
 IClampProtocol = namedtuple("IClampProtocol", "num init int dur amp seg")
 
 
-class Experiment:
+class Experiment(NeuronRemovable):
     def __init__(self, iti: float):
         """
         Experimental object which allows to create protocols of stimulations.
@@ -123,7 +124,7 @@ class Experiment:
         netstim = NetStimCell(name="stim")
         self.netstims.append(netstim)
 
-        stim = netstim.make_netstim(start=current_time, number=epsp.num, interval=epsp.int)
+        stim = netstim.add_netstim(start=current_time, number=epsp.num, interval=epsp.int)
         synapse.add_netcon(source=stim, weight=epsp.w, threshold=epsp.thr, delay=epsp.delay)
         current_time += epsp.int * epsp.num
 

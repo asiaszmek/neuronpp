@@ -1,6 +1,9 @@
+from neuronpp.core.decorators import non_removable_fields
+from neuronpp.core.neuron_removable import NeuronRemovable
 
 
-class Wrapper:
+@non_removable_fields("parent")
+class Wrapper(NeuronRemovable):
     def __init__(self, parent, name):
         try:
             self.parent = parent

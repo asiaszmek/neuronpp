@@ -15,13 +15,12 @@ WARMUP = 200
 if __name__ == '__main__':
     # define cell
     cell = Ebner2019AChDACell(name="cell")
-    filepath = os.path.join(path, "..",
-                            "commons/morphologies/swc/my.swc")
+    filepath = os.path.join(path, "..", "commons/morphologies/asc/cell1.asc")
     cell.load_morpho(filepath=filepath)
 
     # make NetStim stims
     ns_cell = NetStimCell("netstim_cell")
-    stim1 = ns_cell.make_netstim(start=WARMUP + 1, number=1)
+    stim1 = ns_cell.add_netstim(start=WARMUP + 1, number=1)
 
     # make VecStim
     vs_cell = VecStimCell("vecstim_cell")

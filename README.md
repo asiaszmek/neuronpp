@@ -1,42 +1,62 @@
-Neuron++ wraps NEURON (http://www.neuron.yale.edu) with easy to use Python objects. The main intention behind this library was to perform tedious tasks in few lines of code.
+Neuron++ is a wrapper for NEURON (http://www.neuron.yale.edu) with easy to use Python objects. 
+The key intention behind this framework was to perform tedious tasks in few lines of code with 
+the object-oriented paradigm. 
+
+NEURON allows to create simulations of Biological Neural Networks. The Neuron++ framework was 
+designed to match the simplicity of libraries such as Keras library for Artificial Neural Networks.
+With Neuron++ you can easily create group of cells, stack them together as populations, 
+then stimulate them with external input and collect readouts to perform any task.
 
 ## Key features
 
-  * Use for fast prototyping of neuron models and neural networks built in NEURON simulation environment using a Python interface utilizing object-oriented programming (OOP) paradigm.
+  * Use for fast prototyping of neural models in NEURON simulator, using Python interface with 
+    the object-oriented paradigm (OOP)
 
-  * Precisely define single cell models and connect them together to create a network.
+  * Precisely define single cell models and connect them together to create a network
   
   * Auto-compilation of all MOD files on the fly
   
-  * Auto-load SWC/ASC or HOC morphology
+  * Auto-load SWC/ASC or HOC morphology for each cell
   
-  * Upload HOC defined models and adapt them to your needs.
-  
-  * Manage synaptic signaling.
-  
-  * Create dendritic spines.
+  * Upload HOC defined models and adapt them to your needs
   
   * Define in vitro experimental protocols (eg. STDP paradigms)
   
-  * Debug synaptic connections and point process RANGE values in real time with interactive stimulations from the keyboard.
+  * Manage synaptic signaling
   
-  * Define populations of neurons and connect them together.
+  * Debug synapses and point processes RANGE values in real time with interactive 
+    stimulation from the keyboard
   
-  * Provide helpful exception messages and guidelines of how to use NEURON functions without errors.
+  * Create predefined dendritic spines and synapses with ease
+  
+  * Define populations of neurons and connect them together
+  
+  * Provide helpful exception messages and guidelines of how to use NEURON functions with Neuron++ 
+    wrapper without errors
     
-This is an Alpha version
+This is the Alpha version.
 
 ## Prerequisites
 
-* Python > 3.5
-* Install NEURON from the instruction: https://github.com/ziemowit-s/neuron_netpyne_get_started
-* Install requirements.txt
+1. Python >= 3.5 (recommended is Python 3.8)
+2. Install NEURON >= 7.8
+  * If on Linux:
+  ```bash
+   pip install neuron
+   ```
+  
+  * If not Linux - go to the instruction: https://github.com/ziemowit-s/neuron_get_started
+  
+3. Install requirements.txt:
+```bash
+pip install -r requirements.txt
+```
 
 ## Repository
 
 https://github.com/ziemowit-s/neuronpp
 
-## Installation
+## Neuron++ installation
 
 * Locally:
 ```bash
@@ -119,7 +139,7 @@ All examples are located in: examples/
    ```python
     cell.add_seg("soma", diam=20, l=20, nseg=10)
     cell.add_seg("dend", diam=2, l=100, nseg=10)
-    cell.connect_secs(source="dend", target="soma")
+    cell.connect_secs(child="dend", parent="soma")
    ```
 
   * add NEURON mechanisms (default or MOD-based):
@@ -220,7 +240,7 @@ use such synapse for the `Experiment`.
   * define NetStim (or VecStim) and pass it to synapses as a source while creating:
   ```python
     netstim = NetStimCell(name="netst")
-    stim = netstim.make_netstim(start=300, number=5, interval=10)
+    stim = netstim.add_netstim(start=300, number=5, interval=10)
     
     cell = Cell(name="cell")
     soma = cell.filter_secs(name="soma")
@@ -325,13 +345,13 @@ Create a population of many neurons of the same type and connect them between po
   * Create a stimulation and define your first population:
   ```python
     # Create NetStim
-    netstim = NetStimCell("stim").make_netstim(start=21, number=100, interval=2)
+    netstim = NetStimCell("stim").add_netstim(start=21, number=100, interval=2)
 
     # Create population 1
     pop1 = Population("pop_1")
     pop1.add_cells(num=4, cell_function=cell_function)
 
-    connector = pop1.connect(cell_proba=0.5)
+    connector = pop1.connect(cell_connection_proba=0.5)
     connector.set_source(netstim)
     connector.set_target([c.filter_secs("dend")(0.5) for c in pop1.populations])
     syn_adder = connector.add_synapse("Exp2Syn")
@@ -355,7 +375,7 @@ Create a population of many neurons of the same type and connect them between po
   * Define connections between pop1 and pop2 where weights will be chosen 
   from the Normal Truncated Distribution:
   ```python
-    connector = pop2.connect(cell_proba=0.2)
+    connector = pop2.connect(cell_connection_proba=0.2)
     connector.set_source([c.filter_secs("soma")(0.5) for c in pop1.populations])
     connector.set_target([c.filter_secs("dend")(0.5) for c in pop2.populations])
     syn_adder = connector.add_synapse("Exp2Syn")

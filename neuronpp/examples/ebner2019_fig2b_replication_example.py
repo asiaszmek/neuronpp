@@ -25,15 +25,14 @@ delta_t = 10  # LTP
 
 if __name__ == '__main__':
     cell = Ebner2019Cell(name="cell")
-    filepath = os.path.join(path, "..",
-                            "commons/morphologies/asc/cell1.asc")
+    filepath = os.path.join(path, "..", "commons/morphologies/asc/cell1.asc")
     cell.load_morpho(filepath=filepath)
     cell.make_default_mechanisms()
 
     soma = cell.filter_secs("soma")
 
     # Netstim to synapse
-    stim = NetStimCell("stim").make_netstim(start=WARMUP, number=REPS, interval=interval)
+    stim = NetStimCell("stim").add_netstim(start=WARMUP, number=REPS, interval=interval)
     syn = cell.add_synapse(source=stim, netcon_weight=WEIGHT, mod_name="Syn4P", delay=1, seg=cell.filter_secs('apic[1]')(0.5))
 
     # IClamp to soma
@@ -52,4 +51,4 @@ if __name__ == '__main__':
 
     # Plot
     rec.plot(position="merge")
-    plt.plot()
+    plt.show()

@@ -1,9 +1,10 @@
 import re
 
+from neuronpp.core.neuron_removable import NeuronRemovable
 from neuronpp.utils.compile_mod import compile_and_load_mods
 
 
-class CoreCell:
+class CoreCell(NeuronRemovable):
 
     path_compiled = False
 
@@ -54,7 +55,7 @@ class CoreCell:
             list of hoc objects which match the filter
         """
         def is_regex(pattern):
-            return "SRE_Pattern" == pattern.__class__.__name__
+            return "Pattern" in pattern.__class__.__name__
 
         patterns = CoreCell._prepare_patterns(kwargs)
         pat_len = len(patterns)
@@ -107,6 +108,13 @@ class CoreCell:
         if len(filtered) == 1 and as_list is False:
             filtered = filtered[0]
         return filtered
+
+    @staticmethod
+    def remove(searchable, obj_filter=None, **kwargs):
+        objs = CoreCell.filter(searchable=searchable, obj_filter=obj_filter, as_list=True, **kwargs)
+        for o in objs:
+            searchable.remove(o)
+            o.remove_immediate_from_neuron()
 
     @staticmethod
     def _prepare_patterns(kwargs):

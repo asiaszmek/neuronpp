@@ -4,13 +4,12 @@ from nrn import Section
 
 from neuronpp.core.hocwrappers.sec import Sec
 from neuronpp.core.hocwrappers.seg import Seg
-from neuronpp.core.cells.section_cell import SectionCell
 from neuronpp.core.cells.point_process_cell import PointProcessCell
 
 
 class CoreHocCell(PointProcessCell):
     def __init__(self, name, compile_paths=None):
-        SectionCell.__init__(self, name, compile_paths=compile_paths)
+        PointProcessCell.__init__(self, name, compile_paths=compile_paths)
         self._hoc_loaded = False
 
     def load_hoc(self, hoc_file, hoc_template_name: str = None, reinitialize=True):
@@ -104,8 +103,7 @@ class CoreHocCell(PointProcessCell):
             for mod_name, hoc_obj in pps.items():
                 try:
                     loc = list(hoc_obj)[0].get_segment().x
-                    seg = Seg(obj=hoc_sec_obj(loc), parent=hoc_sec_obj,
-                              name="%s(%s)" % (hoc_sec_obj.name(), loc))
+                    seg = Seg(obj=hoc_sec_obj(loc), parent=hoc_sec_obj)
                     self._append_pp(hoc_point_process=list(hoc_obj)[0], mod_name=mod_name,
                                     segment=seg)
                 except Exception as e:
